@@ -10,6 +10,13 @@ from tree_sitter import Language, Parser
 
 from os import path
 
+import csv
+
+
+#from github import Github
+
+#import git
+
 
 #===============================================================================
 #Use build_library method to compile the grammar of the language
@@ -31,14 +38,14 @@ Language.build_library(
 #===============================================================================
 #Create an object from the language and load it into the project
 #===============================================================================
-PY_LANGUAGE = Language(LIB_PATH, 'java')
+JAVA_LANGUAGE = Language(LIB_PATH, 'java')
 #===============================================================================
 
      
 #Create the parser and configure it with the language object
 #=============================================================================== 
 parser = Parser()
-parser.set_language(PY_LANGUAGE)
+parser.set_language(JAVA_LANGUAGE)
 #=============================================================================== 
 
 
@@ -46,9 +53,30 @@ parser.set_language(PY_LANGUAGE)
 #Read the source code file and put its content into a list
 #===============================================================================
 
-src = open("/home/mohammed/Examples/Person/src/person/PersonSerialization.java", "r")
+#src = open("/home/mohammed/Examples/Person/src/person/PersonSerialization.java", "r")
+src = open("/home/mohammed/Downloads/Hotel-Management-Project-Java-master/Main.java", "r")
 content_list = src.readlines()
 #print(content_list)
+
+#git.Repo.clone_from("https://github.com/mah80/Person.git", "/home/mohammed/Examples/Test/")
+
+
+
+#Clear the files
+##################################################################
+filename = ["/home/mohammed/Documents/JavaParser Files/Class Attributes.csv",
+            "/home/mohammed/Documents/JavaParser Files/Class Methods.csv",
+            "/home/mohammed/Documents/JavaParser Files/Method Parameters.csv",
+            "/home/mohammed/Documents/JavaParser Files/Method Local Variables.csv"
+            ]
+
+for filePath in filename:
+    
+####opening the file with w+ mode truncates the file
+    f = open(filePath, "w+")
+    f.close()
+###################################################################
+
 
 
 #===============================================================================
@@ -137,7 +165,7 @@ nodes_number = root_node.child_count
 #Print the whole tree
 #===============================================================================
 #===============================================================================
-# print(root_node.sexp())
+#print(root_node.sexp())
 #===============================================================================
 #===============================================================================
 
@@ -170,7 +198,7 @@ nodes_number = root_node.child_count
 
 
 #===============================================================================
-def attribute_check(attributesList):
+def attributeCheck(attributesList):
     sensitive_attributes = []
     with open(r'/home/mohammed/Examples/Person/Dictionary.txt', 'r') as file:
         attributes = file.read()
@@ -185,10 +213,10 @@ def attribute_check(attributesList):
 
 
 
-#A function that accept the start point and the end point of a node to slice 
+#The nodeNameFinder function that accept the start point and the end point of a node to slice 
 #the code and extract the actual text of the node in the original code
 #===============================================================================
-def node_text_finder(startPoint, endPoint):
+def nodeNameFinder(startPoint, endPoint):
     
     text = ""
     row1, column1 = startPoint
@@ -203,32 +231,312 @@ def node_text_finder(startPoint, endPoint):
     
 
 
+#The classAttributesFinder method that accept the node (which is a class_body type) to look for its attributes 
+#and write the class name along with its attributes in a file (/home/mohammed/Documents/JavaParser Files/Class Attributes.csv)
+#The structure of the csv file is created as follows: Each class takes a row of the file, the first cell of the row is the class name 
+#then it is followed by its attributes
+############################################################################# 
+def classAttributesFinder(node, className):
+    attribute_names = []
+    
+    attribute_names.append(className)
+    
+###A query to look for all the attributes in the class
+###################################################### 
+    attributeName_query = JAVA_LANGUAGE.query("""
+      (class_body
+      (field_declaration
+      (variable_declarator
+      (identifier) @attribute_name
+      ) 
+      )
+      )
+    """)
+######################################################
+    
+    captures = attributeName_query.captures(node)
+
+###Extract each attribute from the capture and put it in a list to save it later in the file
+############################################################################################    
+    for row in captures:
+        node_captured = next(iter(row))
+        attributeName = nodeNameFinder(node_captured.parent.child_by_field_name('name').start_point, node_captured.parent.child_by_field_name('name').end_point)
+        attribute_names.append(attributeName)
+############################################################################################
+
+
+
+#Open the Class Attributes file to write the class name in the first cell followed by the class attributes
+####################################################################
+#===============================================================================
+    with open('/home/mohammed/Documents/JavaParser Files/Class Attributes.csv', 'a') as file:
+        writer = csv.writer(file, dialect='excel')
+        writer.writerow(attribute_names)
+        file.close()
+#===============================================================================
+            
+
+
+#The classMethodsFinder() method that accept the node (which is a class_body type) and the class name
+#to look for its methods and write the class name along with its methods in a file (/home/mohammed/Documents/JavaParser Files/Class Methods.csv)
+#The structure of the csv file is created as follows: Each class takes a row of the file, the first cell of the row is the class name 
+#then it is followed by its methods
+#===============================================================================
+def classMethodsFinder(node, className):
+
+    classMethods = []
+    
+    method_names = []
+    
+    method_names.append(className)
+
+###A query to look for all the methods in the class
+######################################################    
+    methodName_query = JAVA_LANGUAGE.query("""
+      (class_body
+      (method_declaration
+      (identifier) @method_name
+      ) 
+      )
+    """)
+###################################################### 
+    
+    
+    methodNameCaptures = methodName_query.captures(node)
+    
+
+###Extract each attribute from the capture and put it in a list to save it later in the file
+############################################################################################     
+    for row in methodNameCaptures:
+        node_captured = next(iter(row))
+        methodName = nodeNameFinder(node_captured.parent.child_by_field_name('name').start_point, node_captured.parent.child_by_field_name('name').end_point)
+        method_names.append(methodName)
+        classMethods.append(methodName)
+############################################################################################     
+
+    
+    with open('/home/mohammed/Documents/JavaParser Files/Class Methods.csv', 'a') as file:
+        writer = csv.writer(file, dialect='excel')
+        writer.writerow(method_names)
+        file.close()
+        
+    return classMethods
+             
+#===============================================================================
+    
+   
+
+#The methodParametersFinder() method that accept the node (which is a class_body type), the class name, and a list of its methods
+#to look for the parameters of each method and write them in a file (/home/mohammed/Documents/JavaParser Files/Method Parameters.csv)
+#The structure of the csv file is created as follows: Each class takes a row of the file, the first cell of the row is the class name,
+#the second cell is the method name, then it is followed by the method parameters
+############################################################################# 
+def methodParametersFinder(node, className, class_methods):
+
+    #method_nodes = []
+    method_structures = []
+
+    with open('/home/mohammed/Documents/JavaParser Files/Method Parameters.csv', 'a') as file:
+        writer = csv.writer(file, dialect='excel')
+
+
+###A query to look for all the methods in the class
+######################################################
+        methodStructure_query = JAVA_LANGUAGE.query("""
+          (class_body
+          (method_declaration) @method_structure
+          )
+        """)
+######################################################
+
+
+
+###A query to look for all the parameters of any method in the class
+######################################################   
+        methodParameters_query = JAVA_LANGUAGE.query("""
+          (method_declaration
+          (formal_parameters
+          (formal_parameter
+          (identifier) @parameter_name
+          )
+          )
+          )
+        """)
+######################################################   
+
+    
+        methodStructureCaptures = methodStructure_query.captures(node)
+
+###Extract each method from the capture and put it in a list for the next use
+############################################################################################        
+        for methodStructure in methodStructureCaptures:
+            method_captured = next(iter(methodStructure))
+            method_structures.append(method_captured)
+############################################################################################        
+
+            
+
+###Extract each parameter from the capture and put it in a list after the class name and the method name
+#to save them later in the file
+############################################################################################        
+        for m in range(len(method_structures)):
+            methodParameter_names = []
+            methodParameter_names.append(className)
+            methodParameter_names.append(class_methods[m])
+            methodCaptures = methodParameters_query.captures(method_structures[m])
+            
+            for row in methodCaptures:
+                node_captured = next(iter(row))
+                methodParameterName = nodeNameFinder(node_captured.parent.child_by_field_name('name').start_point, node_captured.parent.child_by_field_name('name').end_point)
+                methodParameter_names.append(methodParameterName)
+############################################################################################
+                
+            writer.writerow(methodParameter_names)
+                
+        
+    file.close() 
+
+#############################################################################    
+
+
+
+#The methodLocalVariablesFinder method that accepts the node to check it, if it is a "method_declaration" then it looks for 
+#its local variables to save them in a file (/home/mohammed/Documents/JavaParser Files/Method Local Variables.csv)
+#The structure of the csv file is created as follows: Each class takes a row of the file, the first cell of the row is the class name,
+#the second cell is the method name, then it is followed by the method local variables
+############################################################################# 
+def methodLocalVariablesFinder(node, className, class_methods):
+
+    method_structures = []
+    
+    
+    with open('/home/mohammed/Documents/JavaParser Files/Method Local Variables.csv', 'a') as file:
+        writer = csv.writer(file, dialect='excel')
+
+ 
+###A query to look for all the methods in the class
+###################################################### 
+        methodStructure_query = JAVA_LANGUAGE.query("""
+          (class_body
+          (method_declaration) @method_structure
+          )
+        """)
+###################################################### 
+
+
+
+###A query to look for all the local variables of any method in the class
+######################################################      
+        methodLocalVariables_query = JAVA_LANGUAGE.query("""
+          (method_declaration
+          (block
+          (local_variable_declaration
+          (variable_declarator
+          (identifier) @variable_name
+          )
+          )
+          )
+          )
+        """)
+######################################################  
+    
+        methodStructureCaptures = methodStructure_query.captures(node)
+ 
+ 
+###Extract each method from the capture and put it in a list for the next use
+############################################################################################        
+        for methodStructure in methodStructureCaptures:
+            method_captured = next(iter(methodStructure))
+            method_structures.append(method_captured)
+############################################################################################        
+
+            
+
+###Extract each local variable from the capture and put it in a list after the class name and the method name
+#to save them later in the file
+############################################################################################        
+        for m in range(len(method_structures)):
+            methodLocalVar_names = []
+            methodLocalVar_names.append(className)
+            methodLocalVar_names.append(class_methods[m])
+            methodCaptures = methodLocalVariables_query.captures(method_structures[m])
+            
+            for row in methodCaptures:
+                node_captured = next(iter(row))
+                methodParameterName = nodeNameFinder(node_captured.parent.child_by_field_name('name').start_point, node_captured.parent.child_by_field_name('name').end_point)
+                methodLocalVar_names.append(methodParameterName)
+############################################################################################        
+
+                
+            writer.writerow(methodLocalVar_names)
+                
+        
+    file.close() 
+
+#######################################################################################                         
+  
+    
+#The sensitiveClassSummary function accepts the order number (sequence number) of the sensitive class, the class name, and its sensitive attributes
+# to put all of them in a list as a summary 
+#####################################################################################
+def sensitiveClassSummary(seq_Num, className, sensitiveAttributes):
+    summaryList = []
+    
+    summaryList.append(seq_Num)
+    summaryList.append(className)
+    summaryList.append(sensitiveAttributes)
+    
+    return summaryList
+#####################################################################################
+
+    
+
 
 
 #Invoke the traverse_tree function to look for the class attributes 
 #===============================================================================     
-for node in traverse_tree(tree):
-        if node.type == "class_body":
-            k = 0
-            class_attributes = []
-            sensitive_attributes = []
-            class_name = node_text_finder(node.parent.child_by_field_name('name').start_point, node.parent.child_by_field_name('name').end_point)
-            while k < node.child_count:
-                l = 0
-                if node.children[k].type == "field_declaration":
-                    
-                    for l in range(node.children[k].child_count):
-                        if node.children[k].children[l].type == "variable_declarator":
-                           attribute_name = node_text_finder(node.children[k].children[l].start_point, node.children[k].children[l].end_point)
-                           class_attributes.append(attribute_name)  
-                    
-                k = k + 1
-                continue
-            print("The number of attributes of class", class_name, "is ", len(class_attributes))
-            print(class_attributes)
-            sensitive_attributes = attribute_check(class_attributes)
-            print("The Number of Sensitive Attributes in class", class_name, "is", len(sensitive_attributes), "/", len(class_attributes))
-            print(sensitive_attributes)
+
+
+for node in traverse_tree(tree):                #Call the traverse_tree() method to look for any class structure in the Java file
+        if node.type == "class_body":           #Check the type of the node
+
+            class_methods = []                  #Define a list for the set of methods in the class
+
+            
+            class_name = nodeNameFinder(node.parent.child_by_field_name('name').start_point, node.parent.child_by_field_name('name').end_point)
+            
+            #class_attributes = classAttributesFinder(node)
+            
+            classAttributesFinder(node, class_name)
+            
+            class_methods = classMethodsFinder(node, class_name)
+            
+            methodParametersFinder(node, class_name, class_methods)
+            
+            methodLocalVariablesFinder(node, class_name, class_methods)
+            
+
+
+
+
+#Open the file for reading
+#####################################################################
+# Open file
+#===============================================================================
+# with open('/home/mohammed/Documents/students.csv') as file_obj:
+#     
+#     # Create reader object by passing the file
+#     # object to reader method
+#     reader_obj = csv.reader(file_obj)
+#     
+#     # Iterate over each row in the csv
+#     # file using reader object
+#     for row in reader_obj:
+#         print(row)
+#===============================================================================
+######################################################################
+
+
 
 #===============================================================================
 
