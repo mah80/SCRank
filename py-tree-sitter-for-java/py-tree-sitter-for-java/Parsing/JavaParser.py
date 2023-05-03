@@ -12,6 +12,8 @@ from os import path
 
 import csv
 
+import pandas as pd
+
 
 #from github import Github
 
@@ -54,7 +56,9 @@ parser.set_language(JAVA_LANGUAGE)
 #===============================================================================
 
 #src = open("/home/mohammed/Examples/Person/src/person/PersonSerialization.java", "r")
-src = open("/home/mohammed/Downloads/Hotel-Management-Project-Java-master/Main.java", "r")
+#src = open("/home/mohammed/Downloads/Hotel-Management-Project-Java-master/Main.java", "r")
+src = open("/home/mohammed/Downloads/Shopping System/src/shopping/system/ShoppingSystem.java", "r")
+
 content_list = src.readlines()
 #print(content_list)
 
@@ -67,7 +71,10 @@ content_list = src.readlines()
 filename = ["/home/mohammed/Documents/JavaParser Files/Class Attributes.csv",
             "/home/mohammed/Documents/JavaParser Files/Class Methods.csv",
             "/home/mohammed/Documents/JavaParser Files/Method Parameters.csv",
-            "/home/mohammed/Documents/JavaParser Files/Method Local Variables.csv"
+            "/home/mohammed/Documents/JavaParser Files/Method Local Variables.csv",
+            '/home/mohammed/Documents/JavaParser Files/Sensitive Classes.csv',
+            '/home/mohammed/Documents/JavaParser Files/Sensitive Local Variables-Based Methods.csv',
+            '/home/mohammed/Documents/JavaParser Files/Sensitive Parameters-Based Methods.csv'
             ]
 
 for filePath in filename:
@@ -197,22 +204,6 @@ nodes_number = root_node.child_count
 
 
 
-#===============================================================================
-def attributeCheck(attributesList):
-    sensitive_attributes = []
-    with open(r'/home/mohammed/Examples/Person/Dictionary.txt', 'r') as file:
-        attributes = file.read()
-        for i in range(len(attributesList)):
-            if attributesList[i] in attributes:
-                sensitive_attributes.append(attributesList[i])
-                #num += 1
-                #print(attributesList[i])
-        #print(num, "/", len(attributesList))
-    return sensitive_attributes
-#===============================================================================
-
-
-
 #The nodeNameFinder function that accept the start point and the end point of a node to slice 
 #the code and extract the actual text of the node in the original code
 #===============================================================================
@@ -231,7 +222,7 @@ def nodeNameFinder(startPoint, endPoint):
     
 
 
-#The classAttributesFinder method that accept the node (which is a class_body type) to look for its attributes 
+#The classAttributesFinder function that accept the node (which is a class_body type) to look for its attributes 
 #and write the class name along with its attributes in a file (/home/mohammed/Documents/JavaParser Files/Class Attributes.csv)
 #The structure of the csv file is created as follows: Each class takes a row of the file, the first cell of the row is the class name 
 #then it is followed by its attributes
@@ -277,7 +268,7 @@ def classAttributesFinder(node, className):
             
 
 
-#The classMethodsFinder() method that accept the node (which is a class_body type) and the class name
+#The classMethodsFinder() function that accept the node (which is a class_body type) and the class name
 #to look for its methods and write the class name along with its methods in a file (/home/mohammed/Documents/JavaParser Files/Class Methods.csv)
 #The structure of the csv file is created as follows: Each class takes a row of the file, the first cell of the row is the class name 
 #then it is followed by its methods
@@ -326,7 +317,7 @@ def classMethodsFinder(node, className):
     
    
 
-#The methodParametersFinder() method that accept the node (which is a class_body type), the class name, and a list of its methods
+#The methodParametersFinder() function that accept the node (which is a class_body type), the class name, and a list of its methods
 #to look for the parameters of each method and write them in a file (/home/mohammed/Documents/JavaParser Files/Method Parameters.csv)
 #The structure of the csv file is created as follows: Each class takes a row of the file, the first cell of the row is the class name,
 #the second cell is the method name, then it is followed by the method parameters
@@ -400,7 +391,7 @@ def methodParametersFinder(node, className, class_methods):
 
 
 
-#The methodLocalVariablesFinder method that accepts the node to check it, if it is a "method_declaration" then it looks for 
+#The methodLocalVariablesFinder function that accepts the node to check it, if it is a "method_declaration" then it looks for 
 #its local variables to save them in a file (/home/mohammed/Documents/JavaParser Files/Method Local Variables.csv)
 #The structure of the csv file is created as follows: Each class takes a row of the file, the first cell of the row is the class name,
 #the second cell is the method name, then it is followed by the method local variables
@@ -475,20 +466,147 @@ def methodLocalVariablesFinder(node, className, class_methods):
 
 #######################################################################################                         
   
-    
-#The sensitiveClassSummary function accepts the order number (sequence number) of the sensitive class, the class name, and its sensitive attributes
-# to put all of them in a list as a summary 
-#####################################################################################
-def sensitiveClassSummary(seq_Num, className, sensitiveAttributes):
-    summaryList = []
-    
-    summaryList.append(seq_Num)
-    summaryList.append(className)
-    summaryList.append(sensitiveAttributes)
-    
-    return summaryList
-#####################################################################################
 
+
+#The keywordsCheck() function that accepts a term (which was extracted from a csv file) to look for it in Keywords Dictionary file. If it is existed, the function 
+#returns True. Otherwise, it returns False.
+#######################################################################################  
+def keywordsCheck(term):
+    
+    b = False
+    
+    with open('/home/mohammed/Documents/JavaParser Files/Keywords Dictionary.csv', 'r') as KWfile:
+        
+        keywordsReader = csv.reader(KWfile)
+        
+        for row in keywordsReader:
+            for cell in row:
+                if term == cell:
+                        b = True
+                        break
+    
+    KWfile.close()
+    
+    return b
+#######################################################################################      
+          
+        
+        
+        
+    
+
+
+#The sensitiveClassCheck() function that checks the attributes of each class (in the Class Attributes file) whether are sensitive (existed in Keywords Dictionary file).
+#If yes, then the function writes the class name and its sensitive attributes in the Sensitive Classes file.
+#===============================================================================
+def sensitiveClassCheck():
+    
+    with open ('/home/mohammed/Documents/JavaParser Files/Class Attributes.csv', 'r') as CAfile, open ('/home/mohammed/Documents/JavaParser Files/Sensitive Classes.csv', 'a') as SCfile:
+        
+          classAttributesReader = csv.reader(CAfile)
+          sensitiveClassesWriter = csv.writer(SCfile, dialect='excel')
+#           
+          for i in classAttributesReader:    ###Read the Class Attributes file line by line (Each line in the file represents a class record)
+#       
+              temp = []
+              sensitive_classes = []
+              temp = i
+              
+              if len(temp) > 1:             ###If the class has at least one attribute, then it will be sent to the keywordsCheck() function.
+                                            ###Any class without attributes will not be sent.
+                                            
+                  sensitive_classes.append(temp[0])     ###Add the class name as a first element in the row
+                  for i in temp[1:]:
+                      flag = keywordsCheck(i)
+                      if flag:
+                          sensitive_classes.append(i)
+              
+              if len(sensitive_classes) > 1:                            ###Only the class with at least one sensitive attributes will be saved in the file
+                  sensitiveClassesWriter.writerow(sensitive_classes)
+
+    CAfile.close()
+    SCfile.close()
+ 
+#===========================================================================
+#===============================================================================
+
+
+#The sensitiveClassCheck() function that checks the parameters of each method (in the Method Parameters file) whether are sensitive (existed in Keywords Dictionary file).
+#If yes, then the function writes the method name and its sensitive parameters in the Sensitive Parameters-Based Methods file.
+#===============================================================================
+def sensitiveMethodParametersCheck():
+    
+    with open ('/home/mohammed/Documents/JavaParser Files/Method Parameters.csv', 'r') as MPfile, open ('/home/mohammed/Documents/JavaParser Files/Sensitive Parameters-Based Methods.csv', 'a') as SPBMfile:
+        
+        methodParametersReader = csv.reader(MPfile)
+        sensitiveParametersBasedMethodWriter = csv.writer(SPBMfile, dialect='excel')
+                
+                
+        for i in methodParametersReader:        ###Read the Method Parameters file line by line (Each line in the file represents a method record)
+    
+            temp = []
+            sensitive_methods = []
+            temp = i
+           
+            if len(temp) > 2:                  ###If the method has at least one parameter, then it will be sent to the keywordsCheck() function.
+                                               ###Any method without parameters will not be sent.
+                
+                
+                sensitive_methods.append(temp[1])   ###Add the method name as a first element in the row
+                for i in temp[1:]:
+                    flag = keywordsCheck(i)
+                    if flag:
+                        sensitive_methods.append(i)
+                    
+               
+            if len(sensitive_methods) > 1:                             ###Only the method with at least one sensitive parameter will be saved in the file
+                sensitiveParametersBasedMethodWriter.writerow(sensitive_methods)
+       
+    MPfile.close()
+    SPBMfile.close()
+ 
+#===========================================================================
+#===============================================================================
+
+
+
+#The sensitiveMethodLocalVariablesCheck() function that checks the local variables of each method (in the Method Local Variables file) whether are 
+#sensitive (existed in Keywords Dictionary file). If yes, then the function writes the method name and its sensitive local variables in
+#the Sensitive Local Variables-Based Methods file.
+#===============================================================================
+def sensitiveMethodLocalVariablesCheck():
+    
+    with open ('/home/mohammed/Documents/JavaParser Files/Method Local Variables.csv', 'r') as MLVfile, open ('/home/mohammed/Documents/JavaParser Files/Sensitive Local Variables-Based Methods.csv', 'a') as SLVBMfile:
+        
+        methodLocalVariablesReader = csv.reader(MLVfile)
+        sensitiveLocalVariablesBasedMethodWriter = csv.writer(SLVBMfile, dialect='excel')
+                
+                
+        for i in methodLocalVariablesReader:        ###Read the Method Local Variables file line by line (Each line in the file represents a method record)
+    
+            temp = []
+            sensitive_methods = []
+            temp = i
+           
+            if len(temp) > 2:                       ###If the method has at least one local variable, then it will be sent to the keywordsCheck() function.
+                                                    ###Any method without local variables will not be sent.
+                
+                
+                
+                sensitive_methods.append(temp[1])   ###Add the method name as a first element in the row
+                for i in temp[1:]:
+                    flag = keywordsCheck(i)
+                    if flag:
+                        sensitive_methods.append(i)
+                    
+               
+            if len(sensitive_methods) > 1:          ###Only the method with at least one sensitive local variable will be saved in the file
+                sensitiveLocalVariablesBasedMethodWriter.writerow(sensitive_methods)
+       
+    MLVfile.close()
+    SLVBMfile.close()
+ 
+#===========================================================================
     
 
 
@@ -503,19 +621,52 @@ for node in traverse_tree(tree):                #Call the traverse_tree() method
             class_methods = []                  #Define a list for the set of methods in the class
 
             
+            #Find the class name to use it in each call of the following methods
+            ####################################################################
             class_name = nodeNameFinder(node.parent.child_by_field_name('name').start_point, node.parent.child_by_field_name('name').end_point)
+            ####################################################################
             
-            #class_attributes = classAttributesFinder(node)
             
+            #Find the attributes of the class
+            ####################################################################
             classAttributesFinder(node, class_name)
+            ####################################################################
             
+            
+            #Find the methods of the class
+            ####################################################################
             class_methods = classMethodsFinder(node, class_name)
+            ####################################################################
             
+            
+            #Find the parameters of the method
+            ####################################################################
             methodParametersFinder(node, class_name, class_methods)
+            ####################################################################
             
+            
+            #Find the local variables of the method
+            ####################################################################
             methodLocalVariablesFinder(node, class_name, class_methods)
+            ####################################################################
             
 
+#Find the sensitive classes based on the attributes
+####################################################################
+sensitiveClassCheck()
+####################################################################
+
+
+#Find the sensitive methods based on the parameters
+####################################################################
+sensitiveMethodParametersCheck()
+####################################################################
+
+
+#Find the sensitive methods based on the local variables
+####################################################################
+sensitiveMethodLocalVariablesCheck()
+####################################################################
 
 
 
