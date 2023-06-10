@@ -57,8 +57,12 @@ parser.set_language(JAVA_LANGUAGE)
 
 #src = open("/home/mohammed/Examples/Person/src/person/PersonSerialization.java", "r")
 #src = open("/home/mohammed/Downloads/Hotel-Management-Project-Java-master/Main.java", "r")
-src = open("/home/mohammed/Downloads/Shopping System/src/shopping/system/ShoppingSystem.java", "r")
+#src = open("/home/mohammed/Downloads/Shopping System/src/shopping/system/ShoppingSystem.java", "r")
 #src = open("/home/mohammed/Downloads/Student/src/student/Student.java", "r")
+#src = open("/home/mohammed/Downloads/Projects for Evaluation/PackrGUI-master/src/PackrGUI.java", "r")
+#src = open("/home/mohammed/Downloads/Projects for Evaluation/commons-cli-master/src/main/java/org/apache/commons/cli/AlreadySelectedException.java", "r")
+#src = open("/home/mohammed/Downloads/Projects for Evaluation/opencsv-master/src/au/com/bytecode/opencsv/bean/ColumnPositionMappingStrategy.java", "r")
+src = open("/home/mohammed/Downloads/Projects for Evaluation/SquashBacktrace.java", "r")
 
 content_list = src.readlines()
 #print(content_list)
@@ -736,16 +740,21 @@ def classSensitivityCount():
 
 
 for node in traverse_tree(tree):                #Call the traverse_tree() method to look for any class structure in the Java file
-        if node.type == "class_body":           #Check the type of the node
+    
+        if node.type == 'class_declaration':
+            
+
+        
 
             class_methods = []                  #Define a list for the set of methods in the class
 
             
             #Find the class name to use it in each call of the following methods
             ####################################################################
-            class_name = nodeNameFinder(node.parent.child_by_field_name('name').start_point, node.parent.child_by_field_name('name').end_point)
+            class_name = nodeNameFinder(node.child_by_field_name('name').start_point, node.child_by_field_name('name').end_point)
             ####################################################################
-            
+            #print(node.child_by_field_name('name'))
+            print(class_name)            
             
             #Find the attributes of the class
             ####################################################################
