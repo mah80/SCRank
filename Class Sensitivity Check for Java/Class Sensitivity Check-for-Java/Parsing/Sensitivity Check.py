@@ -13,10 +13,6 @@ from os import path
 import csv
 
 import pandas as pd
-#from astropy.table import row
-#from statsmodels.tsa.vector_ar.tests.results.results_svar_st import A_rownames
-
-
 
 #from github import Github
 
@@ -65,10 +61,14 @@ parser.set_language(JAVA_LANGUAGE)
 #src = open("/home/mohammed/Downloads/Projects for Evaluation/PackrGUI-master/src/PackrGUI.java", "r")
 #src = open("/home/mohammed/Downloads/Projects for Evaluation/commons-cli-master/src/main/java/org/apache/commons/cli/AlreadySelectedException.java", "r")
 #src = open("/home/mohammed/Downloads/Projects for Evaluation/opencsv-master/src/au/com/bytecode/opencsv/bean/ColumnPositionMappingStrategy.java", "r")
+#src = open("/home/mohammed/Downloads/Projects for Evaluation/opencsv-master/src/au/com/bytecode/opencsv/bean/BeanToCsv.java", "r")
 #src = open("/home/mohammed/Downloads/Projects for Evaluation/SquashBacktrace.java", "r")
 #src = open("/home/mohammed/Downloads/Projects for Evaluation/FerrisWheel.java", "r")
 #src = open("/home/mohammed/Downloads/Projects for Evaluation/User.java", "r")
 src = open("/home/mohammed/Downloads/Projects for Evaluation/Shopping System/src/shopping/system/ShoppingSystem.java", "r")
+#src = open("/home/mohammed/eclipse-workspace/Collect Java Files/combined_input.txt", "r")
+#src = open("/home/mohammed/Downloads/Student/src/student/StudentDriver.java", "r")
+
 
 content_list = src.readlines()
 #print(content_list)
@@ -159,6 +159,32 @@ def traverse_tree(tree):
 #===============================================================================
 
 
+
+#Walking the Syntax Tree of the method
+#### This function is available in https://github.com/tree-sitter/py-tree-sitter/issues/33 ####
+#===============================================================================
+def traverse_method(sub_tree):
+    cursor = sub_tree.walk()
+ 
+    reached_root = False
+    while reached_root == False:
+        yield cursor.node
+ 
+        if cursor.goto_first_child():
+            continue
+ 
+        if cursor.goto_next_sibling():
+            continue
+ 
+        retracing = True
+        while retracing:
+            if not cursor.goto_parent():
+                retracing = False
+                reached_root = True
+ 
+            if cursor.goto_next_sibling():
+                retracing = False
+#===============================================================================
 
 
 
@@ -506,36 +532,6 @@ def methodLocalAssignmentsFinder(node, className, class_methods):
 ###################################################### 
 
 
-
-###A query to look for all the assignments in any method of the class and extract the left identifier (with this) of the assignment
-######################################################      
-        methodLocalAssignmentLeftVariablesWithThis_query = JAVA_LANGUAGE.query("""
-          (block
-          (expression_statement
-          (assignment_expression
-          left: (field_access
-          (identifier) @local.definition
-          ) 
-          )
-          )
-          )
-        """)
-###################################################### 
-
-
-###A query to look for all the assignments in any method of the class and extract the left identifier (without this) of the assignment
-######################################################      
-        methodLocalAssignmentLeftVariablesWithoutThis_query = JAVA_LANGUAGE.query("""
-          (block
-          (expression_statement
-          (assignment_expression
-          left: (identifier) @local.definition
-          )
-          )
-          )
-        """)
-###################################################### 
-
   
     
         methodStructureCaptures = methodStructure_query.captures(node)
@@ -557,19 +553,11 @@ def methodLocalAssignmentsFinder(node, className, class_methods):
             methodLocalAssignmentVariables_names = []
             methodLocalAssignmentVariables_names.append(className)
             methodLocalAssignmentVariables_names.append(class_methods[m])
-            methodLocalAssignmentLeftVariablesWithThisCaptures = methodLocalAssignmentLeftVariablesWithThis_query.captures(method_structures[m])
-            methodLocalAssignmentLeftVariablesWithoutThis_queryCaptures = methodLocalAssignmentLeftVariablesWithoutThis_query.captures(method_structures[m])
-            
-            
-            for row in methodLocalAssignmentLeftVariablesWithThisCaptures:
-                node_captured = next(iter(row))
-                methodLocalAssignmentLeftVariablesWithThisCapturesName = nodeNameFinder(node_captured.start_point, node_captured.end_point)
-                methodLocalAssignmentVariables_names.append(methodLocalAssignmentLeftVariablesWithThisCapturesName)
-            
-            for row in methodLocalAssignmentLeftVariablesWithoutThis_queryCaptures:
-                node_captured = next(iter(row))
-                methodLocalAssignmentLeftVariablesWithoutThisCapturesName = nodeNameFinder(node_captured.start_point, node_captured.end_point)
-                methodLocalAssignmentVariables_names.append(methodLocalAssignmentLeftVariablesWithoutThisCapturesName)
+            for n in traverse_method(method_structures[m]):    ####NEW
+                if n.type == 'assignment_expression':
+                   leftIdentifierNode = extractAssignmentIdentifier(n)
+                   leftIdentifierName = nodeNameFinder(leftIdentifierNode.start_point, leftIdentifierNode.end_point)
+                   methodLocalAssignmentVariables_names.append(leftIdentifierName) 
 ############################################################################################        
 
                 
@@ -604,7 +592,6 @@ def keywordsCheck(term, path):
     return b
 #######################################################################################      
           
-        
         
         
     
@@ -646,8 +633,8 @@ def sensitiveClassCheck():
 #===============================================================================
 
 
-#The sensitiveClassCheck() function that checks the parameters of each method (in the Method Parameters file) whether are sensitive (existed in Keywords 
-##Dictionary file). If yes, then the function writes the method name and its sensitive parameters in the Sensitive Parameters-Based Methods file.
+#The sensitiveMethodParametersCheck() function that checks the parameters of each method (in the Method Parameters file) whether are sensitive (existed in Sensitive 
+##Classes file). If yes, then the function writes the method name and its sensitive parameters in the Sensitive Parameters-Based Methods file.
 #===============================================================================
 def sensitiveMethodParametersCheck():
     
@@ -691,7 +678,7 @@ def sensitiveMethodParametersCheck():
 
 
 #The sensitiveMethodLocalVariablesTypeCheck() function that checks the local variables of each method (in the Method Local Variables file) whether are 
-#sensitive (existed in Keywords Dictionary file). If yes, then the function writes the method name and its sensitive local variables in
+#sensitive (existed in Sensitive Classes file). If yes, then the function writes the method name and its sensitive local variables in
 #the Sensitive Local Variables-Based Methods file.
 #===============================================================================
 def sensitiveMethodLocalVariablesTypeCheck():
@@ -845,7 +832,7 @@ def searchForSensitiveAssignmentMethod(file_path, sensitiveAttribute, className)
 def classSensitivityCount(classNames):
     
     
-    ##Open four csv files (Sensitive Classes.csv, Class Attributes.csv)
+    ##Open three csv files (Sensitive Classes.csv, Class Attributes.csv)
     ##for reading and Unsorted Sensitive Classes.csv for writing
     with open ('/home/mohammed/Documents/Class Sensitivity Check (Method Variables Check)/Sensitive Classes.csv', 'r') as SCfile, open ('/home/mohammed/Documents/Class Sensitivity Check (Method Variables Check)/Class Attributes.csv', 'r') as CAfile, open('/home/mohammed/Documents/Class Sensitivity Check (Method Variables Check)/Unsorted Sensitive Classes.csv', 'a') as USSCfile:
         
@@ -858,8 +845,7 @@ def classSensitivityCount(classNames):
         
         senClasses = []
         for i in sensitiveClassesReader:                    ##Take every sensitive class from the file
-                                                            ##Define a list for the sensitive local variables based methods in the class
-            sensitiveMethod = []             ##Define a list for the sensitive parameters based methods in the class
+            sensitiveMethod = []                            ##Define a list for the sensitive methods in the class
             sensitiveAssignmentBasedMethod = []             ##Define a list for the sensitive assignment based methods in the class
             sensitiveMethodsUnion = []
             unsortedSensitveClasses = []
@@ -969,6 +955,29 @@ def removeDuplication(elementsList):
 
 
 
+##The extractAssignmentIdentifier() function that accepts a node from type 'assignment_expression' to extract the left identifier when the left side of the
+##expression is only identifier or it is 'field_access' in form of 'this.identifier', and return the identifier
+#===============================================================================
+def extractAssignmentIdentifier(node):
+    identifier = None
+    cursor = node.walk()
+    cursor.goto_first_child()
+    if cursor.node.type == 'field_access':
+        cursor.goto_first_child()
+        if cursor.node.type == 'this':
+            cursor.goto_next_sibling()
+            cursor.goto_next_sibling()
+            identifier = cursor.node
+                    
+    elif cursor.node.type == 'identifier':
+        identifier = cursor.node
+
+    return identifier
+#===============================================================================
+
+
+
+
 
 ##The sortSensitiveClasses() function that open the Unsorted Sensitive Classes.csv file to sort all the sensitive classes based on the
 ##sensitivity level value and write them in a new file (Sorted Sensitive Classes.csv)  
@@ -1046,6 +1055,7 @@ for node in traverse_tree(tree):                #Call the traverse_tree() method
             methodLocalAssignmentsFinder(node, class_name, class_methods)
             ####################################################################
             
+               
 
 #Find the sensitive classes based on the attributes
 ####################################################################
