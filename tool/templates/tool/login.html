@@ -1,0 +1,233 @@
+{% extends 'tool/base_nonav.html' %}
+{% load static %}
+
+{% block content %}
+<div id="particles-js"> </div>
+<section class="h-100" style="position: relative;z-index: 1;">
+   <div class="container py-5 h-100 ">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-xl-5">
+          <div class="card rounded-3 text-black">
+            <div class="row">
+              <div class="col-lg-12">
+                <div class="card-body p-md-5 mx-md-4">
+  
+                  <div class="text-center">
+                    <img src="{% static 'tool/login/OaklandUniversity_WebLogo_Gold.png' %}"
+                      style="width: 185px;" alt="logo">
+                  </div>
+                  
+                  {% if message %}
+                  <div class="w-100 text-center mt-3">
+                  <span class="text-danger">
+                  {{message}}
+                  </span>
+                </div>
+                  {% endif %}
+                  <form class="mt-5" action="{% url 'login' %}" method="POST">{% csrf_token %}
+  
+                    <div class="form-outline mb-4">
+                      <input name="username" type="email" id="form2Example11" class="form-control"
+                        placeholder="Email" />
+                      {% comment %} <label class="form-label" for="form2Example11">Username</label> {% endcomment %}
+                    </div>
+  
+                    <div class="form-outline mb-4">
+                      <input name="password" type="password" id="form2Example22" class="form-control" placeholder="Password" />
+                      {% comment %} <label class="form-label" for="form2Example22">Password</label> {% endcomment %}
+                    </div>
+  
+                    <div class="text-center pt-1 mb-5 pb-1">
+                      <button class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3" type="submit">Log
+                        in</button>
+                        <div>
+                      <a class="text-muted" href="#!" >Forgot password?</a>
+                        </div>
+                    </div>
+  
+                    <div class="d-flex align-items-center justify-content-center pb-4">
+                      <p class="mb-0 me-2">Don't have an account?</p>
+                      <button type="button" class="btn btn-outline-danger" disabled >Create new</button>
+                    </div>
+  
+                  </form>
+  
+                </div>
+              </div>
+              {% comment %} <div class="col-lg-6 d-flex align-items-center gradient-custom-2">
+                <div class="text-white px-3 py-4 p-md-5 mx-md-4">
+                  <h4 class="mb-4">We are more than just a company</h4>
+                  <p class="small mb-0">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
+                    exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                </div>
+              </div> {% endcomment %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> 
+
+  </section>
+  <script src="{% static 'tool/login/particles.js' %}"></script>
+
+  <script>
+    particlesJS("particles-js", {
+        "particles": {
+          "number": {
+            "value": 200,
+            "density": {
+              "enable": true,
+              "value_area": 800
+            }
+          },
+          "color": {
+            "value": "#867047"
+          },
+          "shape": {
+            "type": "circle",
+            "stroke": {
+              "width": 0,
+              "color": "#867047"
+            },
+            "polygon": {
+              "nb_sides": 5
+            },
+            "image": {
+              "src": "img/github.svg",
+              "width": 100,
+              "height": 100
+            }
+          },
+          "opacity": {
+            "value": 0.6,
+            "random": false,
+            "anim": {
+              "enable": false,
+              "speed": 1,
+              "opacity_min": 0.1,
+              "sync": false
+            }
+          },
+          "size": {
+            "value": 5,
+            "random": true,
+            "anim": {
+              "enable": false,
+              "speed": 40,
+              "size_min": 0.1,
+              "sync": false
+            }
+          },
+          "line_linked": {
+            "enable": true,
+            "distance": 150,
+            "color": "#867047",
+            "opacity": 0.4,
+            "width": 1
+          },
+          "move": {
+            "enable": true,
+            "speed": 6,
+            "direction": "none",
+            "random": false,
+            "straight": false,
+            "out_mode": "out",
+            "bounce": false,
+            "attract": {
+              "enable": false,
+              "rotateX": 600,
+              "rotateY": 1200
+            }
+          }
+        },
+        "interactivity": {
+          "detect_on": "canvas",
+          "events": {
+            "onhover": {
+              "enable": false,
+              "mode": "repulse"
+            },
+            "onclick": {
+              "enable": true,
+              "mode": "push"
+            },
+            "resize": true
+          },
+          "modes": {
+            "grab": {
+              "distance": 140,
+              "line_linked": {
+                "opacity": 1
+              }
+            },
+            "bubble": {
+              "distance": 400,
+              "size": 40,
+              "duration": 2,
+              "opacity": 8,
+              "speed": 3
+            },
+            "repulse": {
+              "distance": 200,
+              "duration": 0.4
+            },
+            "push": {
+              "particles_nb": 4
+            },
+            "remove": {
+              "particles_nb": 2
+            }
+          }
+        },
+        "retina_detect": true
+      });
+      
+      
+      /* ---- stats.js config ---- */
+      
+      var count_particles, stats, update;
+      stats = new Stats;
+      stats.setMode(0);
+      stats.domElement.style.position = 'absolute';
+      stats.domElement.style.left = '0px';
+      stats.domElement.style.top = '0px';
+      document.body.appendChild(stats.domElement);
+      count_particles = document.querySelector('.js-count-particles');
+      update = function() {
+        stats.begin();
+        stats.end();
+        if (window.pJSDom[0].pJS.particles && window.pJSDom[0].pJS.particles.array) {
+          count_particles.innerText = window.pJSDom[0].pJS.particles.array.length;
+        }
+        requestAnimationFrame(update);
+      };
+      requestAnimationFrame(update);
+  </script>
+
+  {% comment %} {% block css %} {% endcomment %}
+
+{% comment %} <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.4.0/css/all.min.css">
+<link rel="stylesheet" href="{% static 'tool/css/styles.css'%}">
+<link href="https://fonts.googleapis.com/css?family=Ubuntu" rel="stylesheet">
+{% endblock css %}
+
+{% block title %}Sign in{% endblock title %}
+{% block js %}{% endblock js %}
+
+
+{% block content %}
+
+
+<div class="main">
+    <div id="particles-js">
+        <p class="sign" align="center">Sign in</p>
+        <form class="form1">
+            <input class="un " type="email" align="center" placeholder="Email" required>
+            <input class="pass" type="password" align="center" placeholder="Password" required>
+            <a class="submit" type submit align="center">Sign in</a>
+            <p class="forgot" align="center"><a href="#">Forgot Password?</p>
+    </div>
+</div>
+<script src="particles.js"></script> {% endcomment %}
+{% endblock content %}

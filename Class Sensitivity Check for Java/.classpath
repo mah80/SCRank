@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="src" path="py-tree-sitter-for-java/Parsing/parsers/tree-sitter-java/script/run-javaparser/src/main/java/com/github/tree-sitter"/>
-	<classpathentry kind="src" path="py-tree-sitter-for-java/Parsing/parsers/tree-sitter-java/test/highlight"/>
-	<classpathentry kind="lib" path="py-tree-sitter-for-java/Parsing/parsers/tree-sitter-java/script/run-javaparser/target/run-javaparser-1.0-SNAPSHOT.jar"/>
-	<classpathentry kind="output" path="bin"/>
-</classpath>
