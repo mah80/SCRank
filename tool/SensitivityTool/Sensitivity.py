@@ -16,20 +16,6 @@ import os
 
 import pandas as pd
 
-
-# #===============================================================================
-# #The Language object that accepts the path of the language parser and the language name
-# #===============================================================================
-# JAVA_LANGUAGE = Language('tree-sitter-java/parser.dll', 'java') 
-# #===============================================================================
-
-     
-# #Create the parser and configure it with the language object
-# #=============================================================================== 
-# parser = Parser()
-# parser.set_language(JAVA_LANGUAGE)
-# #=============================================================================== 
-
 # Load the Java language grammar
 Language.build_library(
     'build/my-languages.so',
@@ -40,7 +26,8 @@ Language.build_library(
 
 JAVA_LANGUAGE = Language('build/my-languages.so', 'java')
 
-# Create a new parser instance
+#Create the parser and configure it with the language object
+#=============================================================================== 
 parser = Parser()
 parser.set_language(JAVA_LANGUAGE)
 
@@ -66,12 +53,11 @@ def analyzer(project_directory, projectID, keywords=None):
     # List to store file contents
     file_contents = []
 
-    # Accessing content List
+    # Accessing global vars
     global content_list
     global OUTPUT_DIR
     OUTPUT_DIR =  os.path.join("Output",projectID)
 
-    print("HELOOOO", project_directory)
 
     # Recursively traverse directories
     for root, directories, files in os.walk(project_directory):
@@ -80,7 +66,7 @@ def analyzer(project_directory, projectID, keywords=None):
             if os.path.splitext(file_path)[1] in file_extensions:
                 file_contents.append(process_file(file_path))
     
-    print(len(file_contents))
+
     # Combine file contents into a single string then write to a new file
 
     combined_contents = '\n'.join(file_contents)
@@ -224,11 +210,11 @@ def analyzer(project_directory, projectID, keywords=None):
         "Normalized Type Statistic.csv",
         
         
-        'Sensitivity Ratio Statistic.csv',
+        # 'Sensitivity Ratio Statistic.csv',
         
-        'Normalized Sensitivity Ratio Statistic.csv',
+        # 'Normalized Sensitivity Ratio Statistic.csv',
         
-        'Sorted Normalized Sensitivity Ratio Statistic.csv'
+        # 'Sorted Normalized Sensitivity Ratio Statistic.csv'
     ]
     
     if not os.path.exists(OUTPUT_DIR):
@@ -1159,12 +1145,8 @@ def enumAttributesFinder(node, enumName):
 ###################################################### 
     attributeName_query = JAVA_LANGUAGE.query("""
       (enum_body
-      (enum_body_declarations
-      (field_declaration
-      (variable_declarator
+      (enum_constant
       (identifier) @attribute_name
-      ) 
-      )
       )
       )
     """)
@@ -1243,241 +1225,6 @@ def enumMethodsFinder(node, enumName):
 #===============================================================================
 
 
-   
-
-#The methodParametersFinderForEnumeration() function that accepts the node (which is a enumeration_body type), the enumeration name, and a list of its methods
-#to look for the parameters of each method and write them in a file (Output/Method Parameters_Enumeration.csv)
-#The structure of the csv file is created as follows: Each enumeration takes a row of the file, the first cell of the row is the enumeration name,
-#the second cell is the method name, then it is followed by the method parameters
-############################################################################# 
-def methodParametersFinderForEnumeration(node, className, class_methods):
-
-    #method_nodes = []
-    method_structures = []
-
-    with open(os.path.join(OUTPUT_DIR,'Method Parameters_Enumeration.csv'), 'a', newline='') as file:
-        writer = csv.writer(file, dialect='excel')
-
-
-###A query to look for all the methods in the enumeration
-######################################################
-        methodStructure_query = JAVA_LANGUAGE.query("""
-          (enum_body
-          (enum_body_declarations
-          (method_declaration) @method_structure
-          )
-          )
-        """)
-######################################################
-
-
-
-###A query to look for all the parameters of any method in the enumeration
-######################################################   
-        methodParameters_query = JAVA_LANGUAGE.query("""
-          (method_declaration
-          (formal_parameters
-          (formal_parameter
-          (type_identifier) @parameter_name
-          )
-          )
-          )
-        """)
-######################################################   
-
-    
-        methodStructureCaptures = methodStructure_query.captures(node)
-
-###Extract each method from the capture and put it in a list for the next use
-############################################################################################        
-        for methodStructure in methodStructureCaptures:
-            method_captured = next(iter(methodStructure))
-            method_structures.append(method_captured)
-############################################################################################        
-
-            
-
-###Extract each parameter from the capture and put it in a list after the enumeration name and the method name to save them later in the file
-############################################################################################        
-        for m in range(len(method_structures)):
-            methodParameter_names = []
-            methodParameter_names.append(className)
-            methodParameter_names.append(class_methods[m])
-            methodCaptures = methodParameters_query.captures(method_structures[m])
-            
-            for row in methodCaptures:
-                node_captured = next(iter(row))
-                methodParameterName = nodeNameFinder(node_captured.start_point, node_captured.end_point)
-                methodParameter_names.append(methodParameterName)
-############################################################################################
-                
-            writer.writerow(methodParameter_names)
-                
-        
-    file.close() 
-
-#############################################################################
-
-
-
-
-
-
-
-#The methodLocalVariablesTypeFinderForEnumeration function that accepts the node (which is a enum_body type), the enumeration name, and a list of its methods
-#to look for the types of each local variable in each method and write them in a file (Output/Method Local Variables_Enumeration.csv)
-#The structure of the csv file is created as follows: Each enumeration takes a row of the file, the first cell of the row is the enumeration name,
-#the second cell is the method name, then it is followed by the method local variables
-############################################################################# 
-def methodLocalVariablesTypeFinderForEnumeration(node, className, class_methods):
-
-    method_structures = []
-    
-    
-    with open(os.path.join(OUTPUT_DIR,'Method Local Variables_Enumeration.csv'), 'a', newline='') as file:
-        writer = csv.writer(file, dialect='excel')
-
- 
-###A query to look for all the methods in the enumeration
-###################################################### 
-        methodStructure_query = JAVA_LANGUAGE.query("""
-          (enum_body
-          (enum_body_declarations
-          (method_declaration) @method_structure
-          )
-          )
-        """)
-###################################################### 
-
-
-
-###A query to look for the type of all local variables of any method in the class
-######################################################      
-        methodLocalVariablesType_query = JAVA_LANGUAGE.query("""
-          (block
-          (local_variable_declaration
-          (type_identifier) @variable_type
-          )
-          )
-        """)
-######################################################
-
-  
-    
-        methodStructureCaptures = methodStructure_query.captures(node)
- 
- 
-###Extract each method from the capture and put it in a list for the next use
-############################################################################################        
-        for methodStructure in methodStructureCaptures:
-            method_captured = next(iter(methodStructure))
-            method_structures.append(method_captured)
-############################################################################################        
-
-            
-
-###Extract each local variable from the capture and put it in a list after the class name and the method name
-#to save them later in the file
-############################################################################################        
-        for m in range(len(method_structures)):
-            methodLocalVarType_names = []
-            methodLocalVarType_names.append(className)
-            methodLocalVarType_names.append(class_methods[m])
-            localVariablesTypeCaptures = methodLocalVariablesType_query.captures(method_structures[m])
-            
-            
-            for row in localVariablesTypeCaptures:
-                node_captured = next(iter(row))
-                methodLocalVariableTypeName = nodeNameFinder(node_captured.start_point, node_captured.end_point)
-                methodLocalVarType_names.append(methodLocalVariableTypeName)
-
-############################################################################################        
-
-                
-            writer.writerow(methodLocalVarType_names)
-                
-        
-    file.close() 
-
-#######################################################################################
-
-
-
-
-
-
-#The methodLocalAssignmentsFinderForEnumeration function that accepts the node (which is a enum_body type), the enumeration name, and a list of its methods
-#to look for any use of identifiers (which can be an attribute in the same class) and write them in a file 
-##(Output/Method Local Identifiers_Enumeration.csv) The structure of the csv file is created as follows:
-# Each enumeration takes a row of the file, the first cell of the row is the enumeration name, the second cell is the method name, 
-##then it is followed by the identifiers that are used in the method body
-############################################################################# 
-def methodLocalAssignmentsFinderForEnumeration(node, className, class_methods):
-
-    method_structures = []
-    EnumerationAttributesPath = 'Enumeration Attributes.csv'
-    
-    with open(os.path.join(OUTPUT_DIR,'Method Local Identifiers_Enumeration.csv'), 'a', newline='') as file:
-        writer = csv.writer(file, dialect='excel')
-
- 
-###A query to look for all the methods in the enumeration
-###################################################### 
-        methodStructure_query = JAVA_LANGUAGE.query("""
-          (enum_body
-          (enum_body_declarations
-          (method_declaration) @method_structure
-          )
-          )
-        """)
-###################################################### 
-
-
-  
-    
-        methodStructureCaptures = methodStructure_query.captures(node)
- 
- 
-###Extract each method from the capture and put it in a list for the next use
-############################################################################################        
-        for methodStructure in methodStructureCaptures:
-            method_captured = next(iter(methodStructure))
-            method_structures.append(method_captured)
-############################################################################################        
-
-            
-
-###Extract each left variable of the assignment from the capture and put it in a list after the class name and the method name
-#to save them later in the file
-############################################################################################        
-        for m in range(len(method_structures)):
-            methodLocalAssignmentVariables_names = []
-            methodLocalAssignmentVariables_names.append(className)
-            methodLocalAssignmentVariables_names.append(class_methods[m])
-            for n in traverse_method(method_structures[m]):    ####NEW
-                if n.type == 'identifier':
-                    leftIdentifierName = nodeNameFinder(n.start_point, n.end_point)
-                    #print("This is my print", className, leftIdentifierName)
-                    flag = searchForSensitiveAssignmentMethod(EnumerationAttributesPath, leftIdentifierName, className)
-                    if flag:
-                    #if searchForSensitiveAssignmentMethod(EnumerationAttributesPath, leftIdentifierName, className) != None:
-                        methodLocalAssignmentVariables_names.append(leftIdentifierName)
-                
-
-              
-############################################################################################        
-
-                
-            writer.writerow(methodLocalAssignmentVariables_names)
-                
-        
-    file.close() 
-
-#######################################################################################
-
-
-
-
 
 ##########################################################################################
 ####################THE END OF THE ENUMERATION PARSING FUNCTIONS##########################
@@ -1541,8 +1288,8 @@ def searchForSensitiveClassInstance(path, term):
 def sensitiveClassCheck():
 
     keywordsDictionaryPath = 'Keywords Dictionary.csv'
-    inputPath = ['Class Attributes.csv', 'Interface Attributes.csv', 'Enumeration Attributes.csv']
-    outputPath = ['Sensitive Classes.csv', 'Sensitive Interfaces.csv', 'Sensitive Enumerations.csv']
+    inputPath = ['Class Attributes.csv', 'Enumeration Attributes.csv']
+    outputPath = ['Sensitive Classes.csv', 'Sensitive Enumerations.csv']
     
     for inputPath, outputPath in zip(inputPath, outputPath):
         with open (os.path.join(OUTPUT_DIR,inputPath), 'r') as CAfile, open (os.path.join(OUTPUT_DIR,outputPath), 'a', newline='') as SCfile:
@@ -1584,8 +1331,8 @@ def sensitiveMethodParametersCheck():
     
     
     sensitiveClassesPath = 'Sensitive Classes.csv'
-    inputPath = ['Method Parameters_Class.csv', 'Method Parameters_Interface.csv', 'Method Parameters_Enumeration.csv']
-    outputPath = ['Sensitive Parameters-Based Methods_Class.csv', 'Sensitive Parameters-Based Methods_Interface.csv', 'Sensitive Parameters-Based Methods_Enumeration.csv']
+    inputPath = ['Method Parameters_Class.csv', 'Method Parameters_Interface.csv']
+    outputPath = ['Sensitive Parameters-Based Methods_Class.csv', 'Sensitive Parameters-Based Methods_Interface.csv']
     
     for inputPath, outputPath in zip(inputPath, outputPath):
         with open (os.path.join(OUTPUT_DIR,inputPath), 'r') as MPfile, open (os.path.join(OUTPUT_DIR,outputPath), 'a', newline='') as SPBMfile:
@@ -1635,8 +1382,8 @@ def sensitiveMethodParametersCheck():
 def sensitiveMethodLocalVariablesTypeCheck():
     
     sensitiveClassesPath = 'Sensitive Classes.csv'
-    inputPath = ['Method Local Variables_Class.csv', 'Method Local Variables_Enumeration.csv']
-    outputPath = ['Sensitive Local Variables-Based Methods_Class.csv', 'Sensitive Local Variables-Based Methods_Enumeration.csv']
+    inputPath = ['Method Local Variables_Class.csv']
+    outputPath = ['Sensitive Local Variables-Based Methods_Class.csv']
     
     
     for inputPath, outputPath in zip(inputPath, outputPath):
@@ -1900,7 +1647,6 @@ def removeDuplication(elementsList):
 # the number of sensitive classes, the number of attributes, the number of sensitive attributes, the number of methods, the number of sensitive methods,
 # in the Java software source code and save them in a csv file (Output/Statistics.csv)
 #===============================================================================
-#def softwareStatistics(classNames, interfaceNames):
 def softwareStatistics(classNames, interfaceNames, enumNames):
     
     classes = 0
@@ -1977,8 +1723,7 @@ def normalizeData():
                 elif maxAttrNum == 0 and minAttrNum == 0:
                     normalizedAttrNum = 0
                 else:
-                    normalizedAttrNum = 0.5
-                    #normalizedAttrNum = row[1] - minAttrNum
+                    normalizedAttrNum = 0.5 ## If maxAttrNum and minAttrNum are equal (but they are not zeros), then the normalized value is assumed as 0.5 (a middle value between 0 and 1)
                 
                 if (maxSensAttrNum - minSensAttrNum) != 0:
                     normalizedSensAttrNum = (row[2] - minSensAttrNum) / (maxSensAttrNum - minSensAttrNum)
@@ -1986,7 +1731,6 @@ def normalizeData():
                     normalizedSensAttrNum = 0
                 else:
                     normalizedSensAttrNum = 0.5
-                    #normalizedSensAttrNum = row[2] - minSensAttrNum
                 
                 if (maxMethNum - minMethNum) != 0:
                     normalizedMethNum = (row[3] - minMethNum) / (maxMethNum - minMethNum)
@@ -2001,16 +1745,20 @@ def normalizeData():
                     normalizedSensMethNum = 0
                 else:
                     normalizedSensMethNum = 0.5
-                
-                if normalizedSensAttrNum != 0 and not pd.isnull(normalizedSensAttrNum):
-                    normalizedAttrNumRatio = (normalizedAttrNum / normalizedSensAttrNum) * 0.5
+
+
+                if normalizedAttrNum != 0 and not pd.isnull(normalizedAttrNum):
+                    normalizedAttrNumRatio = (normalizedSensAttrNum / normalizedAttrNum) * 0.5
                 else:
                     normalizedAttrNumRatio = 0
+                
 
-                if normalizedSensMethNum != 0 and not pd.isnull(normalizedSensMethNum):
-                    normalizedMethNumRatio = (normalizedMethNum / normalizedSensMethNum) * 0.5
+                
+                if normalizedMethNum != 0 and not pd.isnull(normalizedMethNum):
+                    normalizedMethNumRatio = (normalizedSensMethNum / normalizedMethNum) * 0.5
                 else:
                     normalizedMethNumRatio = 0
+                
 
                 normalizedSensitivityRatio = normalizedAttrNumRatio + normalizedMethNumRatio
                 normalizedTypeStatisticWriter.writerow([row[0], normalizedSensitivityRatio])
@@ -2026,29 +1774,29 @@ def normalizeData():
 # based on the number of its attributes, the number of its sensitive attributes, the number of its methods, and the number of its sensitive methods
 # and save them in a csv file (Output/Sensitivity Ratio Statistic.csv)
 #===============================================================================
-def calculateRatio():
+# def calculateRatio():
             
-            df = pd.read_csv(os.path.join(OUTPUT_DIR,'Type Statistic.csv'), header=None)
+#             df = pd.read_csv(os.path.join(OUTPUT_DIR,'Type Statistic.csv'), header=None)
             
-            with open(os.path.join(OUTPUT_DIR,'Sensitivity Ratio Statistic.csv'), 'a', newline='') as NRSfile:
-                normalizedRatioStatisticWriter = csv.writer(NRSfile, dialect='excel')
-                normalizedRatioStatisticWriter.writerow(['CLASS NAME', 'SENSITIVITY LEVEL'])
+#             with open(os.path.join(OUTPUT_DIR,'Sensitivity Ratio Statistic.csv'), 'a', newline='') as NRSfile:
+#                 normalizedRatioStatisticWriter = csv.writer(NRSfile, dialect='excel')
+#                 normalizedRatioStatisticWriter.writerow(['CLASS NAME', 'SENSITIVITY LEVEL'])
                 
-                for index, row in df.iterrows():
-                    attrRatio = 0
-                    methRatio = 0
+#                 for index, row in df.iterrows():
+#                     attrRatio = 0
+#                     methRatio = 0
                     
-                    if row[1] != 0:
-                        attrRatio = row[2] / row[1]
+#                     if row[1] != 0:
+#                         attrRatio = row[2] / row[1]
                     
-                    if row[3] != 0:
-                        methRatio = row[4] / row[3]
+#                     if row[3] != 0:
+#                         methRatio = row[4] / row[3]
                     
-                    normalizedSensitivityRatio = (attrRatio * 0.5) + (methRatio * 0.5)
+#                     normalizedSensitivityRatio = (attrRatio * 0.5) + (methRatio * 0.5)
 
-                    normalizedRatioStatisticWriter.writerow([row[0], normalizedSensitivityRatio])
+#                     normalizedRatioStatisticWriter.writerow([row[0], normalizedSensitivityRatio])
                     
-            NRSfile.close()
+#             NRSfile.close()
             
               
 #===============================================================================                
@@ -2061,31 +1809,31 @@ def calculateRatio():
 # on the sensitivity level value and save them in a csv file (Output/Normalized Sensitivity Ratio Statistic.csv). The
 # normalization is applied one time after finding the sensitivity ratio value.
 #===============================================================================
-def normalizeSenRatio():
+# def normalizeSenRatio():
             
-            df = pd.read_csv(os.path.join(OUTPUT_DIR,'Sensitivity Ratio Statistic.csv'), header=None, skiprows=1)
+#             df = pd.read_csv(os.path.join(OUTPUT_DIR,'Sensitivity Ratio Statistic.csv'), header=None, skiprows=1)
             
-            minSenRatio = df[1].min()
-            maxSenRatio = df[1].max()
+#             minSenRatio = df[1].min()
+#             maxSenRatio = df[1].max()
             
-            # print(minSenRatio)
-            # print(maxSenRatio)
+#             # print(minSenRatio)
+#             # print(maxSenRatio)
             
-            with open(os.path.join(OUTPUT_DIR,'Normalized Sensitivity Ratio Statistic.csv'), 'a', newline='') as NSRSfile:
-                normalizedSenRatioStatisticWriter = csv.writer(NSRSfile, dialect='excel')
-                normalizedSenRatioStatisticWriter.writerow(['CLASS NAME', 'NORMALIZED SENSITIVITY LEVEL'])
+#             with open(os.path.join(OUTPUT_DIR,'Normalized Sensitivity Ratio Statistic.csv'), 'a', newline='') as NSRSfile:
+#                 normalizedSenRatioStatisticWriter = csv.writer(NSRSfile, dialect='excel')
+#                 normalizedSenRatioStatisticWriter.writerow(['CLASS NAME', 'NORMALIZED SENSITIVITY LEVEL'])
                 
-                for index, row in df.iterrows():
-                    if (maxSenRatio - minSenRatio) != 0:
-                        normalizedSenRatio = (row[1] - minSenRatio) / (maxSenRatio - minSenRatio)
-                    elif maxSenRatio == 0 and minSenRatio == 0:
-                        normalizedSenRatio = 0
-                    else:
-                        normalizedSenRatio = 0.5
+#                 for index, row in df.iterrows():
+#                     if (maxSenRatio - minSenRatio) != 0:
+#                         normalizedSenRatio = (row[1] - minSenRatio) / (maxSenRatio - minSenRatio)
+#                     elif maxSenRatio == 0 and minSenRatio == 0:
+#                         normalizedSenRatio = 0
+#                     else:
+#                         normalizedSenRatio = 0.5
                     
-                    normalizedSenRatioStatisticWriter.writerow([row[0], normalizedSenRatio])
+#                     normalizedSenRatioStatisticWriter.writerow([row[0], normalizedSenRatio])
                     
-            NSRSfile.close()
+#             NSRSfile.close()
 #===============================================================================
 
 
@@ -2119,46 +1867,46 @@ def sortSensitiveClasses():
     
     ####################################################################
         
-    with open(os.path.join(OUTPUT_DIR,'Normalized Sensitivity Ratio Statistic.csv'), 'r') as inNSRfile:
-        data = csv.reader(inNSRfile)
-        next(data)
-        sortedSensitiveClasses = sorted(data, key=lambda row: row[1], reverse=True)
-        #print(sortedSensitiveClasses)
-    with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Sensitivity Ratio Statistic.csv'), 'w', newline='') as outNSRfile:
-        writer = csv.writer(outNSRfile)
-        writer.writerows(sortedSensitiveClasses)
+    # with open(os.path.join(OUTPUT_DIR,'Normalized Sensitivity Ratio Statistic.csv'), 'r') as inNSRfile:
+    #     data = csv.reader(inNSRfile)
+    #     next(data)
+    #     sortedSensitiveClasses = sorted(data, key=lambda row: row[1], reverse=True)
+    #     #print(sortedSensitiveClasses)
+    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Sensitivity Ratio Statistic.csv'), 'w', newline='') as outNSRfile:
+    #     writer = csv.writer(outNSRfile)
+    #     writer.writerows(sortedSensitiveClasses)
         
-    with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Sensitivity Ratio Statistic.csv'), 'r') as infile:
-        data = infile.read()
+    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Sensitivity Ratio Statistic.csv'), 'r') as infile:
+    #     data = infile.read()
         
-    with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Sensitivity Ratio Statistic.csv'), 'w', newline='') as outfile:
-        writer = csv.writer(outfile)
-        writer.writerow(['CLASS NAME', 'SENSITIVITY LEVEL']) 
-        outfile.write(data)
+    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Sensitivity Ratio Statistic.csv'), 'w', newline='') as outfile:
+    #     writer = csv.writer(outfile)
+    #     writer.writerow(['CLASS NAME', 'SENSITIVITY LEVEL']) 
+    #     outfile.write(data)
     
-    ####################################################################
+    # ####################################################################
     
-    with open(os.path.join(OUTPUT_DIR,'Normalized Type Statistic.csv'), 'r') as inNTSfile:
-        data = csv.reader(inNTSfile)
-        next(data)
-        sortedSensitiveClasses = sorted(data, key=lambda row: row[1], reverse=True)
-        #print(sortedSensitiveClasses)
-    with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'w', newline='') as outNTSfile:
-        writer = csv.writer(outNTSfile)
-        writer.writerows(sortedSensitiveClasses)
+    # with open(os.path.join(OUTPUT_DIR,'Normalized Type Statistic.csv'), 'r') as inNTSfile:
+    #     data = csv.reader(inNTSfile)
+    #     next(data)
+    #     sortedSensitiveClasses = sorted(data, key=lambda row: row[1], reverse=True)
+    #     #print(sortedSensitiveClasses)
+    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'w', newline='') as outNTSfile:
+    #     writer = csv.writer(outNTSfile)
+    #     writer.writerows(sortedSensitiveClasses)
         
-    with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'r') as infile:
-        data = infile.read()
+    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'r') as infile:
+    #     data = infile.read()
         
-    with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'w', newline='') as outfile:
-        writer = csv.writer(outfile)
-        writer.writerow(['CLASS NAME', 'SENSITIVITY LEVEL']) 
-        outfile.write(data)
+    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'w', newline='') as outfile:
+    #     writer = csv.writer(outfile)
+    #     writer.writerow(['CLASS NAME', 'SENSITIVITY LEVEL']) 
+    #     outfile.write(data)
         
-    inNTSfile.close()
-    outNTSfile.close()
-    inNSRfile.close()
-    outNSRfile.close()    
+    # inNTSfile.close()
+    # outNTSfile.close()
+    # inNSRfile.close()
+    # outNSRfile.close()    
     infile.close()
     outfile.close()
 
