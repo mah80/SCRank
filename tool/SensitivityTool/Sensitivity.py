@@ -488,9 +488,9 @@ def analyzer(project_directory, projectID, keywords=None):
     normalizeData()
     ####################################################################
 
-    calculateRatio()
+    # calculateRatio()
 
-    normalizeSenRatio()
+    # normalizeSenRatio()
 
 
     #Sort the normalized sensitive classes/interface/enumerations based on the sensitivity level value

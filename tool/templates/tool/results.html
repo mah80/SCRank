@@ -1,0 +1,128 @@
+{% extends "tool/base.html" %}
+{% load static %}
+
+
+{% block content %}
+
+<div class="row">
+    <div class="col-12">
+        <div class="chart-container text-center" style="width: 80%; margin: 0 auto;">
+            <h3> Sensitivity per Element</h3>
+            <canvas id="chart1"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6 col-sm-12">
+        <div class="chart-container">
+            <canvas id="chart2"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6 col-sm-12">
+        <div class="chart-container">
+            <canvas id="chart3"></canvas>
+        </div>
+    </div>
+    <div class="col-lg-4 col-md-6 col-sm-12">
+        <div class="chart-container">
+            <canvas id="chart4"></canvas>
+        </div>
+    </div>
+    {% comment %} <div class="col-12">
+        <div class="chart-container text-center" style="width: 40%; margin: 0 auto;">
+            <h3> Sensitivity per Element</h3>
+            <canvas id="chart1"></canvas>
+        </div> 
+        <div
+    </div> {% endcomment %}
+    <div class="row mt-5 mb-5">
+        <div class="col-md-4 offset-md-4 text-center border rounded border-warning" >Download results (zip format)  <a href="{% url 'download_zip' name=zip %}"> <img src="{% static 'tool/results/download.png' %}" style="width: 25px;" alt="logo" > </a> </div>
+    </div>
+
+</div>
+
+<script>
+    
+    var bars = {
+        labels: {{ data.class_names|safe }},
+        datasets: [{
+            label: 'Sensitivity Level',
+            data: {{ data.sensitivity_levels|safe }},
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+        }]
+    };
+
+    var classes = {
+        labels: {{ data.labels|safe }},
+        datasets: [{
+            data: {{ data.values|safe }},
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.5)',
+                'rgba(54, 162, 235, 0.5)'
+            ]
+        }]
+    };
+
+    var attributes = {
+        labels: {{ data.labels_attributes|safe }},
+        datasets: [{
+            data: {{ data.values_attributes|safe }},
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.5)',
+                'rgba(54, 162, 235, 0.5)'
+            ]
+        }]
+    };
+
+    var methods = {
+        labels: {{ data.labels_methods|safe }},
+        datasets: [{
+            data: {{ data.values_methods|safe }},
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.5)',
+                'rgba(54, 162, 235, 0.5)'
+            ]
+        }]
+    };
+
+    var options = {
+        responsive: true
+    };
+
+    var ctx1 = document.getElementById('chart2').getContext('2d');
+    var myPieChart1 = new Chart(ctx1, {
+        type: 'pie',
+        data: classes,
+        options: options
+    });
+
+    var ctx2 = document.getElementById('chart3').getContext('2d');
+    var myPieChart2 = new Chart(ctx2, {
+        type: 'pie',
+        data: attributes,
+        options: options
+    });
+
+    var ctx3 = document.getElementById('chart4').getContext('2d');
+    var myPieChart3 = new Chart(ctx3, {
+        type: 'pie',
+        data: methods,
+        options: options
+    });
+
+    var ctx4 = document.getElementById('chart1').getContext('2d');
+    var myPieChart4 = new Chart(ctx4, {
+        type: 'bar',
+        data: bars,
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
+    });
+</script>
+{% endblock content %}
