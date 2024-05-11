@@ -64,7 +64,6 @@ Starting development server at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
 ```
 
-You can now access the app at [http://127.0.0.1:8000/](http://127.0.0.1:8000/).
 
 ### 6. Access the App
 
