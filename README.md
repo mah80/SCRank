@@ -1,18 +1,11 @@
-```markdown
-# Django App
-
-This is a Django web application.
+# Class Sensitivity Web App
 
 ## Setup Instructions
 
 Follow these steps to set up and run the Django app locally:
 
-### 1. Clone the Repository
+### 1. Clone the Repository and change the directory to the main directory 
 
-```bash
-git clone https://github.com/your-username/django-app.git
-cd django-app
-```
 
 ### 2. Create a Virtual Environment
 
