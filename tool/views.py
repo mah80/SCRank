@@ -20,12 +20,12 @@ from django.core.files import File
 from .models import *
 
 
-@login_required(login_url='login')
+# @login_required(login_url='login')
 def index(request):
     messages = []
     return render(request, "tool/home.html")
 
-@login_required(login_url='login')
+# @login_required(login_url='login')
 def git_process(request):
     messages = []
     if request.method == 'POST':
@@ -75,7 +75,7 @@ def git_process(request):
                         files_to_zip.append((relative_path, open(file_path, 'rb').read()))
 
                 # Create a temporary zip file
-                zip_file_path = f'output/{project_path.split("/")[-1]}.zip'  
+                zip_file_path = f'output/{projectID}.zip'  
                 print(zip_file_path)
                 with zipfile.ZipFile(zip_file_path, 'w') as zip_file:
                     for file_name, file_content in files_to_zip:
@@ -91,7 +91,7 @@ def git_process(request):
                                     name= f'{project_path.split("/")[-1]}.zip'
                                 )
                 with open(zip_file_path,mode="rb") as f:
-                    obj.result = File(f, name=f'{project_path.split("/")[-1]}.zip')
+                    obj.result = File(f, name=f'{projectID}.zip')
                     obj.save()
                 
 
@@ -152,14 +152,14 @@ def git_process(request):
                         print(e)
         
         # Go to results page
-            return render(request, "tool/results.html", context={'data': data, 'zip': f'{project_path.split("/")[-1]}.zip'})
+            return render(request, "tool/results.html", context={'data': data, 'zip': obj})
 
         else:
             messages.append("No repository link or file was provided!")
             context = {'messages':messages}
             return render(request, "tool/home.html",context=context)
 
-@login_required(login_url='login')       
+# @login_required(login_url='login')       
 def zip_process(request):
     messages = []
     if request.method == 'POST':
@@ -198,7 +198,7 @@ def zip_process(request):
                         files_to_zip.append((relative_path, open(file_path, 'rb').read()))
 
                 # Create a temporary zip file
-                zip_file_path = f'Output/{file_name[:-4]}.zip'  
+                zip_file_path = f'{project_ID}.zip'  
                 print(zip_file_path)
                 with zipfile.ZipFile(zip_file_path, 'w') as zip_file:
                     for file_name, file_content in files_to_zip:
@@ -214,7 +214,7 @@ def zip_process(request):
                                     name= f'{file_name[:-4]}.zip'
                                 )
                 with open(zip_file_path,mode="rb") as f:
-                    obj.result = File(f, name=f'{file_name[:-4]}.zip')
+                    obj.result = File(f, name=f'{project_ID}.zip')
                     obj.save()
                 
 
@@ -275,7 +275,7 @@ def zip_process(request):
                         print(e)
         
         # Go to results page
-            return render(request, "tool/results.html", context={'data': data, 'zip': f'{file_name[:-4]}.zip'})
+            return render(request, "tool/results.html", context={'data': data, 'zip': obj})
             
     else:
         messages.append("No repository link or file was provided!")
@@ -283,9 +283,10 @@ def zip_process(request):
         return render(request, "tool/home.html",context=context)
 
 
-@login_required(login_url='login')
+# @login_required(login_url='login')
 def report_view(request):   
-    return render(request, "tool/reports.html")
+    jobs = Job.objects.all().order_by('-created_at')
+    return render(request, "tool/reports.html", context={'jobs': jobs})
 
 # def login_view(request):
     
@@ -328,12 +329,12 @@ def logging(log):
 
 def download_zip(request, name):
     # Retrieve the Job instance
-    job = Job.objects.filter(name=name, user__username=request.user)[0]
+    job = Job.objects.filter(result=name)[0]
     BASE_DIR = Path(__file__).resolve().parent
     os.chdir(os.path.join(BASE_DIR, "SensitivityTool"))
     # Open the zip file associated with the Job instance
     if job:
-        with open(os.path.join('output',job.name), 'rb') as zip_file:
+        with open(os.path.join('output',job.result.name.split("/")[1]), 'rb') as zip_file:
             # Create a response with the zip file contents
             response = HttpResponse(zip_file.read(), content_type='application/zip')
             response['Content-Disposition'] = f'attachment; filename="{job.result.name}"'
