@@ -4,10 +4,9 @@ from . import views
 urlpatterns = [
     path('login', views.login_view, name="login"),
     path('logout', views.logout_view, name="logout"),
-    path('index', views.index, name="index"),
+    path('', views.index, name="index"),
     path('report', views.report_view, name="report"),
     path('git_process', views.git_process, name="git_process"),
     path('zip_process', views.zip_process, name="zip_process"),
-     path('download-zip/<path:name>/', views.download_zip, name='download_zip'),
-    path('', views.login_view),
+    path('download-zip/<path:name>/', views.download_zip, name='download_zip'),
 ]

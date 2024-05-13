@@ -20,12 +20,12 @@ from django.core.files import File
 from .models import *
 
 
-@login_required(login_url='login')
+# @login_required(login_url='login')
 def index(request):
     messages = []
     return render(request, "tool/home.html")
 
-@login_required(login_url='login')
+# @login_required(login_url='login')
 def git_process(request):
     messages = []
     if request.method == 'POST':
@@ -159,7 +159,7 @@ def git_process(request):
             context = {'messages':messages}
             return render(request, "tool/home.html",context=context)
 
-@login_required(login_url='login')       
+# @login_required(login_url='login')       
 def zip_process(request):
     messages = []
     if request.method == 'POST':
@@ -283,7 +283,7 @@ def zip_process(request):
         return render(request, "tool/home.html",context=context)
 
 
-@login_required(login_url='login')
+# @login_required(login_url='login')
 def report_view(request):   
     jobs = Job.objects.all().order_by('-created_at')
     return render(request, "tool/reports.html", context={'jobs': jobs})
