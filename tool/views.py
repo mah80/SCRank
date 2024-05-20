@@ -174,7 +174,7 @@ def zip_process(request):
                 output = ''
                 zip_file = request.FILES['zip_file']
                 
-                file_name = zip_file.name
+                file_name = zip_file.name.replace(" ", "-")
                 BASE_DIR = Path(__file__).resolve().parent
                 WORKING_DIR = os.path.join(BASE_DIR, "SensitivityTool", 'projects')
                 project_ID = file_name[:-4] + "-" + str(int(time.time() * 1000))
@@ -184,7 +184,7 @@ def zip_process(request):
                 with ZipFile(zip_file) as zObject:
                     zObject.extractall(path=f"{file_path}")
                 
-                
+
                 os.chdir(os.path.join(BASE_DIR, "SensitivityTool"))
 
                 output = analyzer(file_path,project_ID)
@@ -198,7 +198,7 @@ def zip_process(request):
                         files_to_zip.append((relative_path, open(file_path, 'rb').read()))
 
                 # Create a temporary zip file
-                zip_file_path = f'{project_ID}.zip'  
+                zip_file_path = f'Output/{project_ID}.zip'  
                 print(zip_file_path)
                 with zipfile.ZipFile(zip_file_path, 'w') as zip_file:
                     for file_name, file_content in files_to_zip:
@@ -331,10 +331,13 @@ def download_zip(request, name):
     # Retrieve the Job instance
     job = Job.objects.filter(result=name)[0]
     BASE_DIR = Path(__file__).resolve().parent
-    os.chdir(os.path.join(BASE_DIR, "SensitivityTool"))
+    # os.chdir(os.path.join(BASE_DIR, "SensitivityTool"))
     # Open the zip file associated with the Job instance
     if job:
-        with open(os.path.join('output',job.result.name.split("/")[1]), 'rb') as zip_file:
+        print(os.getcwd())
+        print(os.path.exists(os.path.join(BASE_DIR, "SensitivityTool",'Output',job.result.name.split("/")[1])))
+        print("HELLOOS: ", os.path.join(BASE_DIR, "SensitivityTool",'Output',job.result.name.split("/")[1]))
+        with open(os.path.join(BASE_DIR, "SensitivityTool",'Output',job.result.name.split("/")[1]), 'rb') as zip_file:
             # Create a response with the zip file contents
             response = HttpResponse(zip_file.read(), content_type='application/zip')
             response['Content-Disposition'] = f'attachment; filename="{job.result.name}"'
