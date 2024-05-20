@@ -62,6 +62,8 @@ def analyzer(project_directory, projectID, keywords=None):
     # Recursively traverse directories
     for root, directories, files in os.walk(project_directory):
         for file in files:
+            if file.startswith('__MACOSX/') or file.startswith('._'):
+                continue
             file_path = os.path.join(root, file)
             if os.path.splitext(file_path)[1] in file_extensions:
                 file_contents.append(process_file(file_path))
@@ -398,23 +400,23 @@ def analyzer(project_directory, projectID, keywords=None):
                 
                 
                 
-                #Find the parameters of the method
-                ####################################################################
-                methodParametersFinderForEnumeration(node, enum_name, enumeration_methods)
-                ####################################################################
+                # #Find the parameters of the method
+                # ####################################################################
+                # methodParametersFinderForEnumeration(node, enum_name, enumeration_methods)
+                # ####################################################################
                 
                 
-                #Find the local variables of the method
-                ####################################################################
-                methodLocalVariablesTypeFinderForEnumeration(node, enum_name, enumeration_methods)
-                ####################################################################
+                # #Find the local variables of the method
+                # ####################################################################
+                # methodLocalVariablesTypeFinderForEnumeration(node, enum_name, enumeration_methods)
+                # ####################################################################
                 
                 
                 
-                #Find the local assignments of the method
-                ####################################################################
-                methodLocalAssignmentsFinderForEnumeration(node, enum_name, enumeration_methods)
-                ####################################################################
+                # #Find the local assignments of the method
+                # ####################################################################
+                # methodLocalAssignmentsFinderForEnumeration(node, enum_name, enumeration_methods)
+                # ####################################################################
                 
                 
             ####################################################################
