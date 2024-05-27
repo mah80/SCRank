@@ -1,0 +1,129 @@
+{% extends "tool/base.html" %}
+{% load static %}
+
+    {% block title %} Keywords Dictionary {% endblock title %}
+    {% block css %} 
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 5px;
+            text-align: left;
+        }
+        .add-row-button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            background-color: #218838;
+            color: white;
+            border-radius: 50%;
+            font-size: 24px;
+            border: none;
+            cursor: pointer;
+        }
+        .text-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        {% endblock css %}
+    {% block js %}
+    <script>
+        function addRow() {
+            const table = document.getElementById('csvTable');
+            const rowCount = table.rows.length;
+            const row = table.insertRow(rowCount);
+            const colCount = table.rows[0].cells.length - 1;
+
+            for (let i = 0; i < colCount; i++) {
+                const newCell = row.insertCell(i);
+                newCell.innerHTML = `<input type="text" name="cell_${rowCount}_${i}">`;
+            }
+
+            const deleteCell = row.insertCell(-1);
+            deleteCell.innerHTML = `<button type="button" class="btn btn-danger" onclick="deleteRow(${rowCount})">Delete Row</button>`;
+
+            const newColCountInput = document.createElement('input');
+            newColCountInput.type = 'hidden';
+            newColCountInput.name = `col_count_${rowCount}`;
+            newColCountInput.value = colCount;
+            document.getElementById('csvForm').appendChild(newColCountInput);
+
+            document.getElementById('row_count').value = rowCount + 1;
+        }
+
+        function addColumn() {
+            const table = document.getElementById('csvTable');
+            const rowCount = table.rows.length;
+
+            for (let i = 0; i < rowCount; i++) {
+                const newCell = table.rows[i].insertCell(-1);
+                newCell.innerHTML = `<input type="text" name="cell_${i}_${table.rows[i].cells.length - 2}">`;
+                const colCountInput = document.querySelector(`input[name='col_count_${i}']`);
+                colCountInput.value = table.rows[i].cells.length - 1;
+            }
+
+            const headerRow = table.rows[0];
+            const deleteHeaderCell = headerRow.insertCell(-1);
+            deleteHeaderCell.innerHTML = `<button type="button" class="delete-button" onclick="deleteColumn()">Delete Column</button>`;
+        }
+
+        function deleteRow(rowIndex) {
+            const table = document.getElementById('csvTable');
+            table.deleteRow(rowIndex);
+            document.getElementById('row_count').value = table.rows.length;
+
+            // Update the hidden input fields for column counts
+            for (let i = rowIndex; i < table.rows.length; i++) {
+                const colCountInput = document.querySelector(`input[name='col_count_${i + 1}']`);
+                if (colCountInput) {
+                    colCountInput.name = `col_count_${i}`;
+                }
+            }
+        }
+
+        function deleteColumn() {
+            const table = document.getElementById('csvTable');
+            const rowCount = table.rows.length;
+
+            if (rowCount > 0) {
+                for (let i = 0; i < rowCount; i++) {
+                    table.rows[i].deleteCell(-2);
+                }
+            }
+        }
+    </script>
+    {% endblock js %}
+
+{% block content %}
+    <div class="text-center mb-5 mt-5">
+        <h1>Keywords Dictionary Editor</h1>
+    </div>
+    <form id="csvForm" method="POST">
+        {% csrf_token %}
+        <table id="csvTable" class="table table-striped ">
+            {% for row in data %}
+                <tr>
+                    {% for cell in row %}
+                        <td><input type="text" name="cell_{{ forloop.parentloop.counter0 }}_{{ forloop.counter0 }}" value="{{ cell }}"></td>
+                    {% endfor %}
+                    <td><button type="button" class="btn btn-danger" onclick="deleteRow({{ forloop.counter0 }})">Delete Row</button></td>
+                </tr>
+                <input type="hidden" name="col_count_{{ forloop.counter0 }}" value="{{ row|length }}">
+            {% endfor %}
+           
+        </table>
+        <div class="text-center">
+            <button type="button" class="add-row-button mb-5" onclick="addRow()">+</button>
+        </div>
+        
+        <input type="hidden" id="row_count" name="row_count" value="{{ data|length }}">
+        {% comment %} <button type="button"class="btn btn-success" onclick="addRow()">Add Row</button> {% endcomment %}
+        {% comment %} <button type="button" class="btn btn-success" onclick="addColumn()">Add Column</button> {% endcomment %}
+        <button type="submit" class="btn btn-primary">Save Dictionary</button>
+    </form>
+
+    {% endblock content %}

@@ -42,7 +42,7 @@ parser.set_language(JAVA_LANGUAGE)
 
 content_list = [] # Variable to load the code as a list
 OUTPUT_DIR = ""
-CONFIG_DIR = "Config"
+CONFIG_DIR = "Config/"
 
 def analyzer(project_directory, projectID, keywords=None):
     #Take the path of the source code from the user to collect the .java files and save them in a single file for parsing
@@ -1243,6 +1243,7 @@ def keywordsCheck(term, path):
     
     b = False
     
+    print("Key words: ",os.path.exists(os.path.join(CONFIG_DIR,path)))
     with open(os.path.join(CONFIG_DIR,path), 'r') as KWfile:
         
         keywordsReader = csv.reader(KWfile)
@@ -1267,6 +1268,9 @@ def keywordsCheck(term, path):
 #######################################################################################
 def searchForSensitiveClassInstance(path, term):
     b = False
+    print("OUTPut: ", os.path.join(OUTPUT_DIR,path))
+    print(os.path.exists(os.path.join(OUTPUT_DIR,path)))
+    
     with open(os.path.join(OUTPUT_DIR,path), 'r') as SCfile:
             
             sensitiveClassesReader = csv.reader(SCfile)

@@ -1,40 +1,6 @@
 {% extends "tool/base.html" %}
 {% load static %}
 
-{% block css %}
-
-/* Adjust the height of the divs as needed */
-.left-side, .right-side {
-{% comment %} height: 300px;
-padding: 20px;
-border-radius: 15px; {% endcomment %}
-{% comment %} display: flex;
-flex-direction: column;
-justify-content: center; {% endcomment %}
-}
-{% comment %} .left-side {
-background-color: #4682B4;
-}
-.right-side{
-background-color: #89CFF0;
-} {% endcomment %}
-/* Vertically center the content in the right-side div
-.right-side {
-{% comment %} display: flex;
-flex-direction: column;
-justify-content: center; {% endcomment %}
-} */
-.row {
-{% comment %} display: flex; {% endcomment %}
-{% comment %} justify-content: center; {% endcomment %}
-{% comment %} align-items: center; {% endcomment %}
-{% comment %} min-height: 100vh; /* Ensure the row div takes the full viewport height */ {% endcomment %}
-}
-{% endblock css %}
-{% block js %}
-
-
-{% endblock js %}
 
 {% block content %}
 
@@ -51,30 +17,24 @@ justify-content: center; {% endcomment %}
   </div>
 </div>
 
+
 {% csrf_token %}
 <div class="row justify-content-center ">
   <!-- Left Side Div -->
 
   <div
     class="col-md-5 left-side  text-white text-center  card rounded-3 bg-secondary bg-gradient d-flex justify-content-center align-items-center">
-    {% comment %} <label for="basic-url" class="form-label">Your vanity URL</label> {% endcomment %}
+
     <form id="git_form" action="{% url 'git_process' %}" method="POST">
       {% csrf_token %}
       <div class="input-group mb-3">
         <span class="input-group-text" id="basic-addon3">GitHub Repository</span>
         <input type="text" class="form-control" id="basic-url" name="GitHub_repo"
           aria-describedby="basic-addon3 basic-addon4" placeholder="Paste repo link here" required>
-        {% comment %} <button class="btn btn-primary btn-block fa-lg gradient-custom-2 mb-3"
-          type="submit">Submit</button>
-        {% endcomment %}
         <button class="btn btn-light" type="submit" id="submit_repo">Submit</button>
       </div>
     </form>
-    <!-- <div class="form-text" id="basic-addon4">Example help text goes outside the input group.</div> -->
   </div>
-  {% comment %} <div class="col-md-1 vertical-divider h-25 my-5">
-    <div class="center-element">OR</div>
-  </div> {% endcomment %}
   <div class="flex-column col-md-1 text-center d-flex justify-content-center align-items-center">
     <div class="w-100 h-25 mb-4">
       <div class="vr h-100"></div>
@@ -84,6 +44,8 @@ justify-content: center; {% endcomment %}
       <div class="vr h-100"></div>
     </div>
   </div>
+
+  <!-- Right Side Div -->
   <div
     class="col-md-5 right-side text-white text-center  card rounded-3 bg-light bg-gradient d-flex justify-content-center align-items-center">
     <form id="zip_form" action="{% url 'zip_process' %}" method="POST" enctype="multipart/form-data">
@@ -96,11 +58,10 @@ justify-content: center; {% endcomment %}
     </form>
   </div>
 </div>
-</form>
-{% endblock content %}
-{% comment %}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
-  integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>
-</body>
 
-</html> {% endcomment %}
+</form>
+<div class="w-90 mt-5 text-center note-text">
+  <p>Please make sure the keywords are updated for the project to be examined. </p>
+  <p>You can update the keywords by clicking on Keyword button from the navigation bar</p>
+</div>
+{% endblock content %}

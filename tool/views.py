@@ -1,8 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from tool.SensitivityTool.Sensitivity import analyzer
 import time
-
-
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -13,11 +11,11 @@ import shutil
 from django.contrib.auth.decorators import login_required
 from zipfile import ZipFile
 from django.contrib.auth import authenticate, login, logout
-
 import pandas as pd
 import zipfile
 from django.core.files import File
 from .models import *
+from .helpers.utils import *
 
 
 # @login_required(login_url='login')
@@ -343,3 +341,23 @@ def download_zip(request, name):
             response['Content-Disposition'] = f'attachment; filename="{job.result.name}"'
 
     return response
+
+def edit_key_view(request):
+    file_path = 'tool/SensitivityTool/Config/Keywords Dictionary.csv'
+    if request.method == 'POST':
+        data = []
+        row_count = int(request.POST.get('row_count', 0))
+        for i in range(row_count):
+            row = []
+            col_count = int(request.POST.get(f'col_count_{i}', 0))
+            for j in range(col_count):
+                cell_name = f'cell_{i}_{j}'
+                cell_value = request.POST.get(cell_name, '')
+                row.append(cell_value)
+            data.append(row)
+        
+        write_csv(file_path, data)
+        return redirect('edit_keywords_dictionary')
+
+    data = read_csv(file_path)
+    return render(request, 'tool/KeywordsDict.html', {'data': data})
