@@ -4,4 +4,4 @@ ssn,social security number,soc sec num,socialSecurityNumber,sSN,idNumber
 userId,uesrIdNumber,creditCardInfo,creditcardinfo,usId,id
 creditcardnumber,creditCardNumber,cartId,cartIdNumber,creditNumber,
 usrnm,userName,usrNm,usrName,username,usrnm
-location,A_Plus,B_Plus,name,email,grade
+location,,,,,
