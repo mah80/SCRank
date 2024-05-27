@@ -9,7 +9,7 @@
         }
         th, td {
             padding: 5px;
-            text-align: left;
+            text-align: center;
         }
         .add-row-button {
             display: flex;
@@ -24,7 +24,7 @@
             border: none;
             cursor: pointer;
         }
-        .text-center {
+        .center {
             display: flex;
             justify-content: center;
             align-items: center;
@@ -106,7 +106,7 @@
         {% csrf_token %}
         <table id="csvTable" class="table table-striped ">
             {% for row in data %}
-                <tr>
+                <tr >
                     {% for cell in row %}
                         <td><input type="text" name="cell_{{ forloop.parentloop.counter0 }}_{{ forloop.counter0 }}" value="{{ cell }}"></td>
                     {% endfor %}
@@ -116,7 +116,7 @@
             {% endfor %}
            
         </table>
-        <div class="text-center">
+        <div class="text-center center">
             <button type="button" class="add-row-button mb-5" onclick="addRow()">+</button>
         </div>
         
