@@ -31,6 +31,9 @@ def git_process(request):
         if request.POST.get("GitHub_repo"):
             # time.sleep(1000)
             try:
+
+                output = ''
+
                 print(request.POST.get("GitHub_repo"))
                 BASE_DIR = Path(__file__).resolve().parent
                 WORKING_DIR = os.path.join(BASE_DIR, "SensitivityTool", 'projects')
@@ -40,7 +43,11 @@ def git_process(request):
                 
                 # # Get repo URL 
                 repo_url = request.POST.get("GitHub_repo")
-
+                print("Original Repo URL: ",repo_url)
+                if  repo_url.endswith('.git'):
+                    repo_url = repo_url[:-4]
+                print("CLeaned Repo URL: ", repo_url)
+                
                 projectID = repo_url.rsplit('/', 1)[1]+ "-"+ str(int(time.time() * 1000))
                 project_path =  os.path.join(WORKING_DIR, repo_url.rsplit('/', 1)[1])
                 # print(1,project_path)
