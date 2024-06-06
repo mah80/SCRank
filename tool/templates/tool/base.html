@@ -33,9 +33,9 @@
               <li class="nav-item">
                 <a class="nav-link {% if url_name == 'edit_keywords_dictionary' %}active{% endif %}" href="{% url 'edit_keywords_dictionary'%}" >Keywords</a>
               </li>
-              <li class="nav-item">
+              {% comment %} <li class="nav-item">
                 <a class="nav-link {% if url_name == 'report' %}active{% endif %}" href="{% url 'report'%}" >Reports</a>
-              </li>
+              </li> {% endcomment %}
               {% if user.is_authenticated and user.is_staff %}
               <li class="nav-item">
                 <a class="nav-link" href="\admin">Admin Panel</a>
