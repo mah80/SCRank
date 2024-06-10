@@ -110,10 +110,10 @@ def git_process(request):
 
 
                 # Pie Chart 
-                df = pd.read_csv(os.path.join(output,"Statistics.csv"))
+                df = pd.read_csv(os.path.join(output,"Software Statistics.csv"))
 
                 # Prepare the data for Chart.js
-                total_classes = df['NUMBER OF CLASSES'].iloc[0]
+                total_classes = df['NUMBER OF CLASSIFIERS'].iloc[0]
                 sensitive_classes = df['NUMBER OF SENSITIVE CLASSES'].iloc[0]
                 non_sensitive_classes = total_classes - sensitive_classes
 
@@ -233,10 +233,10 @@ def zip_process(request):
 
 
                 # Pie Chart 
-                df = pd.read_csv(os.path.join(output,"Statistics.csv"))
+                df = pd.read_csv(os.path.join(output,"Software Statistics.csv"))
 
                 # Prepare the data for Chart.js
-                total_classes = df['NUMBER OF CLASSES'].iloc[0]
+                total_classes = df['NUMBER OF CLASSIFIERS'].iloc[0]
                 sensitive_classes = df['NUMBER OF SENSITIVE CLASSES'].iloc[0]
                 non_sensitive_classes = total_classes - sensitive_classes
 

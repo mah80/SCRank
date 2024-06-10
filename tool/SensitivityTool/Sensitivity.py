@@ -147,8 +147,8 @@ def analyzer(project_directory, projectID, keywords=None):
         
         
         # Enumeration Attributes.csv
-        # Structure: Enumeration Name (string), Attribute Names (string)
-        "Enumeration Attributes.csv",
+        # Structure: Enumeration Name (string), Enum Constants (string)
+        "Enumeration Enum Constants.csv",
         
         
         # Enumeration Methods.csv
@@ -195,11 +195,11 @@ def analyzer(project_directory, projectID, keywords=None):
         
         # Statistics.csv
         # Structure: Statistic Name (string), Value (integer)
-        "Statistics.csv",
+        "Software Statistics.csv",
         
         # Type Statistic.csv
         # Structure: Type Name (string), Count (integer)
-        "Type Statistic.csv",
+        "Classifier Statistic.csv",
         
         
         # Sorted Normalized Type Statistic.csv
@@ -481,7 +481,10 @@ def analyzer(project_directory, projectID, keywords=None):
             typeStatistic(enumNames, 'Enumeration')
     ####################################################################
 
-
+    #Add a header to the Classifier Statistic.csv file
+    ####################################################################
+    addFileHeader('Classifier Statistic.csv', ['Classifiers', 'Number of Attributes', 'Number of Sensitive Attributes', 'Number of Methods', 'Number of Sensitive Methods'])
+    ####################################################################
 
 
     #Normalize the sensitivity level of each class/interface/enumeration based on the number of its attributes, the number of its
@@ -1169,7 +1172,7 @@ def enumAttributesFinder(node, enumName):
 #Open the Class Attributes file to write the enumeration name in the first cell followed by the enumeration attributes
 ####################################################################
 #===============================================================================
-    with open(os.path.join(OUTPUT_DIR,'Enumeration Attributes.csv'), 'a', newline='') as file:
+    with open(os.path.join(OUTPUT_DIR,'Enumeration Enum Constants.csv'), 'a', newline='') as file:
         writer = csv.writer(file, dialect='excel')
         writer.writerow(attribute_names)
         file.close()
@@ -1294,7 +1297,7 @@ def searchForSensitiveClassInstance(path, term):
 def sensitiveClassCheck():
 
     keywordsDictionaryPath = 'Keywords Dictionary.csv'
-    inputPath = ['Class Attributes.csv', 'Enumeration Attributes.csv']
+    inputPath = ['Class Attributes.csv', 'Enumeration Enum Constants.csv']
     outputPath = ['Sensitive Classes.csv', 'Sensitive Enumerations.csv']
     
     for inputPath, outputPath in zip(inputPath, outputPath):
@@ -1526,7 +1529,7 @@ def searchForSensitiveAssignmentMethod(file_path, sensitiveAttribute, className)
 
 ##The typeStatistic() function that counts the sensitivity level of each class/interface/enumeration based on its sensitive attributes and 
 ##its sensitive methods. It takes the required data of each class/interface/enumeration from its files which were created from the other functions above.
-##The output of the function is a csv file (Output/Type Statistic.csv) that contains the class/interface/enumeration name, the number of its attributes, the number of 
+##The output of the function is a csv file (Output/Classifier Statistic.csv) that contains the class/interface/enumeration name, the number of its attributes, the number of 
 # its sensitive attributes, the number of its methods, and the number of its sensitive methods.
 #===============================================================================
 def typeStatistic(classNames, type):
@@ -1544,16 +1547,17 @@ def typeStatistic(classNames, type):
     elif type == 'Enumeration':
         senMethFileForClass = ['Sensitive Local Variables-Based Methods_Enumeration.csv', 'Sensitive Parameters-Based Methods_Enumeration.csv', 'Sensitive Local Identifiers-Based Methods_Enumeration.csv']   
         senTypeFile = 'Sensitive Enumerations.csv'
-        typeAttributesFile = 'Enumeration Attributes.csv'
+        typeAttributesFile = 'Enumeration Enum Constants.csv'
         typeMethodsFile = 'Enumeration Methods.csv'
 
-    with open (os.path.join(OUTPUT_DIR,senTypeFile), 'r') as SCfile, open (os.path.join(OUTPUT_DIR,typeAttributesFile), 'r') as CAfile, open (os.path.join(OUTPUT_DIR,'Type Statistic.csv'), 'a', newline='') as TSfile:
+    with open (os.path.join(OUTPUT_DIR,senTypeFile), 'r') as SCfile, open (os.path.join(OUTPUT_DIR,typeAttributesFile), 'r') as CAfile, open (os.path.join(OUTPUT_DIR,'Classifier Statistic.csv'), 'a', newline='') as TSfile:
         
         sensitiveClassesReader = csv.reader(SCfile)
         classAttributesReader = csv.reader(CAfile)
         typeStatisticWriter = csv.writer(TSfile, dialect='excel')
  
-        
+        # Add header to Classifier Statistic.csv file
+        #typeStatisticWriter.writerow(['Classifiers', 'Number of Attributes', 'Number of Sensitive Attributes', 'Number of Methods', 'Number of Sensitive Methods'])
         
         senClasses = []
         for i in sensitiveClassesReader:                    ##Take every sensitive class from the file
@@ -1615,6 +1619,9 @@ def typeStatistic(classNames, type):
         SCfile.close()
         CAfile.close()
         TSfile.close()
+
+
+        #addFileHeader('Output/Classifier Statistic.csv')
 #===============================================================================
         
  
@@ -1647,11 +1654,26 @@ def removeDuplication(elementsList):
     return temp
 #===============================================================================
 
+##The addFileHeader() function that accepts the file path and adds a header to the file
+#===============================================================================
+def addFileHeader(file_path, header):
+    with open(os.path.join(OUTPUT_DIR,file_path), 'r') as infile:
+        data = list(csv.reader(infile))
+
+    with open(file_path, 'w', newline='') as outfile:
+        writer = csv.writer(outfile)
+        writer.writerow(header)
+        writer.writerows(data)
+
+    infile.close()
+    outfile.close()
+#===============================================================================
+
 
 
 ##The softwareStatistics() function that accepts the class/interface/enumeration name and gives back the number of classes/interfaces/enumerations,
 # the number of sensitive classes, the number of attributes, the number of sensitive attributes, the number of methods, the number of sensitive methods,
-# in the Java software source code and save them in a csv file (Output/Statistics.csv)
+# in the Java software source code and save them in a csv file (Output/Software Statistics.csv)
 #===============================================================================
 def softwareStatistics(classNames, interfaceNames, enumNames):
     
@@ -1662,9 +1684,9 @@ def softwareStatistics(classNames, interfaceNames, enumNames):
     sensitiveAttributes = 0
     sensitiveMethods = 0
     
-    with open(os.path.join(OUTPUT_DIR,'Statistics.csv'), 'w', newline='') as file:
+    with open(os.path.join(OUTPUT_DIR,'Software Statistics.csv'), 'w', newline='') as file:
         writer = csv.writer(file, dialect='excel')
-        writer.writerow(['NUMBER OF CLASSES', 'NUMBER OF SENSITIVE CLASSES', 'NUMBER OF ATTRIBUTES', 'NUMBER OF SENSITIVE ATTRIBUTES', 'NUMBER OF METHODS', 'NUMBER OF SENSITIVE METHODS'])
+        writer.writerow(['NUMBER OF CLASSIFIERS', 'NUMBER OF SENSITIVE CLASSES', 'NUMBER OF ATTRIBUTES', 'NUMBER OF SENSITIVE ATTRIBUTES', 'NUMBER OF METHODS', 'NUMBER OF SENSITIVE METHODS'])
         
         for className in classNames:
             classAttributes = classAttributes + methodCounter('Class Attributes.csv', className)
@@ -1686,7 +1708,7 @@ def softwareStatistics(classNames, interfaceNames, enumNames):
             classes = classes + 1
         
         for enumName in enumNames:
-            classAttributes = classAttributes + methodCounter('Enumeration Attributes.csv', enumName)
+            classAttributes = classAttributes + methodCounter('Enumeration Enum Constants.csv', enumName)
             classMethods = classMethods + methodCounter('Enumeration Methods.csv', enumName)
             if searchForSensitiveClassInstance('Sensitive Enumerations.csv', enumName):
                 sensitiveClasses = sensitiveClasses + 1
@@ -1708,7 +1730,7 @@ def softwareStatistics(classNames, interfaceNames, enumNames):
 #===============================================================================
 def normalizeData():
         
-        df = pd.read_csv(os.path.join(OUTPUT_DIR,'Type Statistic.csv'), header=None)
+        df = pd.read_csv(os.path.join(OUTPUT_DIR,'Classifier Statistic.csv'), header=None, skiprows=1)
         
         minAttrNum = df[1].min()
         maxAttrNum = df[1].max()
@@ -1754,19 +1776,30 @@ def normalizeData():
 
 
                 if normalizedAttrNum != 0 and not pd.isnull(normalizedAttrNum):
-                    normalizedAttrNumRatio = (normalizedSensAttrNum / normalizedAttrNum) * 0.5
+                    # normalizedAttrNumRatio = (normalizedSensAttrNum / normalizedAttrNum) * 0.5
+                    normalizedAttrNumRatio = (normalizedSensAttrNum / normalizedAttrNum)
+                    if normalizedAttrNumRatio > 1:
+                        normalizedAttrNumRatio = 1
                 else:
                     normalizedAttrNumRatio = 0
                 
 
                 
                 if normalizedMethNum != 0 and not pd.isnull(normalizedMethNum):
-                    normalizedMethNumRatio = (normalizedSensMethNum / normalizedMethNum) * 0.5
+                    # normalizedMethNumRatio = (normalizedSensMethNum / normalizedMethNum) * 0.5
+                    normalizedMethNumRatio = (normalizedSensMethNum / normalizedMethNum)
+                    if normalizedMethNumRatio > 1:
+                        normalizedMethNumRatio = 1
                 else:
                     normalizedMethNumRatio = 0
                 
 
-                normalizedSensitivityRatio = normalizedAttrNumRatio + normalizedMethNumRatio
+                # normalizedSensitivityRatio = normalizedAttrNumRatio + normalizedMethNumRatio
+                normalizedSensitivityRatio = normalizedAttrNumRatio * 0.5 + normalizedMethNumRatio * 0.5
+                # if normalizedSensitivityRatio > 1:
+                #     normalizedSensitivityRatio = 1
+                # else:
+                #     normalizedSensitivityRatio = round(normalizedSensitivityRatio,2)
                 normalizedTypeStatisticWriter.writerow([row[0], normalizedSensitivityRatio])
 
         NTSfile.close()
@@ -1782,7 +1815,7 @@ def normalizeData():
 #===============================================================================
 # def calculateRatio():
             
-#             df = pd.read_csv(os.path.join(OUTPUT_DIR,'Type Statistic.csv'), header=None)
+#             df = pd.read_csv(os.path.join(OUTPUT_DIR,'Classifier Statistic.csv'), header=None)
             
 #             with open(os.path.join(OUTPUT_DIR,'Sensitivity Ratio Statistic.csv'), 'a', newline='') as NRSfile:
 #                 normalizedRatioStatisticWriter = csv.writer(NRSfile, dialect='excel')
