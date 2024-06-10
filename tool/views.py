@@ -1,8 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from tool.SensitivityTool.Sensitivity import analyzer
 import time
-
-
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -13,11 +11,11 @@ import shutil
 from django.contrib.auth.decorators import login_required
 from zipfile import ZipFile
 from django.contrib.auth import authenticate, login, logout
-
 import pandas as pd
 import zipfile
 from django.core.files import File
 from .models import *
+from .helpers.utils import *
 
 
 # @login_required(login_url='login')
@@ -33,6 +31,9 @@ def git_process(request):
         if request.POST.get("GitHub_repo"):
             # time.sleep(1000)
             try:
+
+                output = ''
+
                 print(request.POST.get("GitHub_repo"))
                 BASE_DIR = Path(__file__).resolve().parent
                 WORKING_DIR = os.path.join(BASE_DIR, "SensitivityTool", 'projects')
@@ -42,7 +43,11 @@ def git_process(request):
                 
                 # # Get repo URL 
                 repo_url = request.POST.get("GitHub_repo")
-
+                print("Original Repo URL: ",repo_url)
+                if  repo_url.endswith('.git'):
+                    repo_url = repo_url[:-4]
+                print("CLeaned Repo URL: ", repo_url)
+                
                 projectID = repo_url.rsplit('/', 1)[1]+ "-"+ str(int(time.time() * 1000))
                 project_path =  os.path.join(WORKING_DIR, repo_url.rsplit('/', 1)[1])
                 # print(1,project_path)
@@ -105,10 +110,10 @@ def git_process(request):
 
 
                 # Pie Chart 
-                df = pd.read_csv(os.path.join(output,"Statistics.csv"))
+                df = pd.read_csv(os.path.join(output,"Software Statistics.csv"))
 
                 # Prepare the data for Chart.js
-                total_classes = df['NUMBER OF CLASSES'].iloc[0]
+                total_classes = df['NUMBER OF CLASSIFIERS'].iloc[0]
                 sensitive_classes = df['NUMBER OF SENSITIVE CLASSES'].iloc[0]
                 non_sensitive_classes = total_classes - sensitive_classes
 
@@ -174,7 +179,7 @@ def zip_process(request):
                 output = ''
                 zip_file = request.FILES['zip_file']
                 
-                file_name = zip_file.name
+                file_name = zip_file.name.replace(" ", "-")
                 BASE_DIR = Path(__file__).resolve().parent
                 WORKING_DIR = os.path.join(BASE_DIR, "SensitivityTool", 'projects')
                 project_ID = file_name[:-4] + "-" + str(int(time.time() * 1000))
@@ -184,7 +189,7 @@ def zip_process(request):
                 with ZipFile(zip_file) as zObject:
                     zObject.extractall(path=f"{file_path}")
                 
-                
+
                 os.chdir(os.path.join(BASE_DIR, "SensitivityTool"))
 
                 output = analyzer(file_path,project_ID)
@@ -198,7 +203,7 @@ def zip_process(request):
                         files_to_zip.append((relative_path, open(file_path, 'rb').read()))
 
                 # Create a temporary zip file
-                zip_file_path = f'{project_ID}.zip'  
+                zip_file_path = f'Output/{project_ID}.zip'  
                 print(zip_file_path)
                 with zipfile.ZipFile(zip_file_path, 'w') as zip_file:
                     for file_name, file_content in files_to_zip:
@@ -228,10 +233,10 @@ def zip_process(request):
 
 
                 # Pie Chart 
-                df = pd.read_csv(os.path.join(output,"Statistics.csv"))
+                df = pd.read_csv(os.path.join(output,"Software Statistics.csv"))
 
                 # Prepare the data for Chart.js
-                total_classes = df['NUMBER OF CLASSES'].iloc[0]
+                total_classes = df['NUMBER OF CLASSIFIERS'].iloc[0]
                 sensitive_classes = df['NUMBER OF SENSITIVE CLASSES'].iloc[0]
                 non_sensitive_classes = total_classes - sensitive_classes
 
@@ -331,12 +336,35 @@ def download_zip(request, name):
     # Retrieve the Job instance
     job = Job.objects.filter(result=name)[0]
     BASE_DIR = Path(__file__).resolve().parent
-    os.chdir(os.path.join(BASE_DIR, "SensitivityTool"))
+    # os.chdir(os.path.join(BASE_DIR, "SensitivityTool"))
     # Open the zip file associated with the Job instance
     if job:
-        with open(os.path.join('output',job.result.name.split("/")[1]), 'rb') as zip_file:
+        print(os.getcwd())
+        print(os.path.exists(os.path.join(BASE_DIR, "SensitivityTool",'Output',job.result.name.split("/")[1])))
+        print("HELLOOS: ", os.path.join(BASE_DIR, "SensitivityTool",'Output',job.result.name.split("/")[1]))
+        with open(os.path.join(BASE_DIR, "SensitivityTool",'Output',job.result.name.split("/")[1]), 'rb') as zip_file:
             # Create a response with the zip file contents
             response = HttpResponse(zip_file.read(), content_type='application/zip')
             response['Content-Disposition'] = f'attachment; filename="{job.result.name}"'
 
     return response
+
+def edit_key_view(request):
+    file_path = 'tool/SensitivityTool/Config/Keywords Dictionary.csv'
+    if request.method == 'POST':
+        data = []
+        row_count = int(request.POST.get('row_count', 0))
+        for i in range(row_count):
+            row = []
+            col_count = int(request.POST.get(f'col_count_{i}', 0))
+            for j in range(col_count):
+                cell_name = f'cell_{i}_{j}'
+                cell_value = request.POST.get(cell_name, '')
+                row.append(cell_value)
+            data.append(row)
+        
+        write_csv(file_path, data)
+        return redirect('edit_keywords_dictionary')
+
+    data = read_csv(file_path)
+    return render(request, 'tool/KeywordsDict.html', {'data': data})

@@ -9,21 +9,25 @@
         <div class="chart-container text-center" style="width: 80%; margin: 0 auto;">
             <h3> Sensitivity per Element</h3>
             <canvas id="chart1"></canvas>
+            <button id="download-chart1" class="btn btn-outline-primary mt-5 mb-5">Download Chart</button>
         </div>
     </div>
     <div class="col-lg-4 col-md-6 col-sm-12">
-        <div class="chart-container">
+        <div class="chart-container text-center">
             <canvas id="chart2"></canvas>
+            <button id="download-chart2" class="btn btn-outline-primary mt-5 mb-5">Download Chart</button>
         </div>
     </div>
     <div class="col-lg-4 col-md-6 col-sm-12">
-        <div class="chart-container">
+        <div class="chart-container text-center">
             <canvas id="chart3"></canvas>
+            <button id="download-chart3" class="btn btn-outline-primary mt-5 mb-5">Download Chart</button>
         </div>
     </div>
     <div class="col-lg-4 col-md-6 col-sm-12">
-        <div class="chart-container">
+        <div class="chart-container text-center">
             <canvas id="chart4"></canvas>
+            <button id="download-chart4" class="btn btn-outline-primary mt-5 mb-5">Download Chart</button>
         </div>
     </div>
     {% comment %} <div class="col-12">
@@ -123,6 +127,38 @@
                 }]
             }
         }
+    });
+
+    // Function to download the chart as an image
+    document.getElementById('download-chart1').addEventListener('click', function() {
+        var link = document.createElement('a');
+        link.href = document.getElementById('chart1').toDataURL('image/png');
+        link.download = 'SensitivityPerElement.png';
+        link.click();
+    });
+
+    // Function to download the chart as an image
+    document.getElementById('download-chart2').addEventListener('click', function() {
+        var link = document.createElement('a');
+        link.href = document.getElementById('chart2').toDataURL('image/png');
+        link.download = 'Classes.png';
+        link.click();
+    });
+
+    // Function to download the chart as an image
+    document.getElementById('download-chart3').addEventListener('click', function() {
+        var link = document.createElement('a');
+        link.href = document.getElementById('chart3').toDataURL('image/png');
+        link.download = 'Attributes.png';
+        link.click();
+    });
+
+    // Function to download the chart as an image
+    document.getElementById('download-chart4').addEventListener('click', function() {
+        var link = document.createElement('a');
+        link.href = document.getElementById('chart4').toDataURL('image/png');
+        link.download = 'Methods.png';
+        link.click();
     });
 </script>
 {% endblock content %}
