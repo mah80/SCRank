@@ -1240,27 +1240,27 @@ def enumMethodsFinder(node, enumName):
 
 
 #The keywordsCheck() function that accepts a term (word) and a path of csv file. The fucntion looks for the term in the csv file, if it is existed, the function 
-#returns True. Otherwise, it returns False.
+#returns True. Otherwise, it returns False. The function uses case-insensitive search.
 #######################################################################################  
 def keywordsCheck(term, path):
     
     b = False
-    
-    print("Key words: ",os.path.exists(os.path.join(CONFIG_DIR,path)))
-    with open(os.path.join(CONFIG_DIR,path), 'r') as KWfile:
+    term = term.lower()
+    with open(path, 'r') as KWfile:
         
         keywordsReader = csv.reader(KWfile)
         
         for row in keywordsReader:
             for cell in row:
-                if term == cell:
+                if term in map(str.lower, row):
+                #if term == cell:
                         b = True
                         break
     
     KWfile.close()
     
     return b
-#######################################################################################     
+#######################################################################################      
           
         
         
