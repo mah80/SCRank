@@ -1730,7 +1730,7 @@ def softwareStatistics(classNames, interfaceNames, enumNames):
 #===============================================================================
 def normalizeData():
         
-        df = pd.read_csv(os.path.join(OUTPUT_DIR,'Classifier Statistic.csv'), header=None, skiprows=1)
+        df = pd.read_csv('Output/Classifier Statistic.csv', header=None, skiprows=1)
         
         minAttrNum = df[1].min()
         maxAttrNum = df[1].max()
@@ -1741,7 +1741,7 @@ def normalizeData():
         minSensMethNum = df[4].min()
         maxSensMethNum = df[4].max()
         
-        with open(os.path.join(OUTPUT_DIR,'Normalized Type Statistic.csv'), 'a', newline='') as NTSfile:
+        with open('Output/Normalized Type Statistic.csv', 'a', newline='') as NTSfile:
             normalizedTypeStatisticWriter = csv.writer(NTSfile, dialect='excel')
             normalizedTypeStatisticWriter.writerow(['CLASS NAME', 'NORMALIZED SENSITIVITY LEVEL'])
             
@@ -1774,27 +1774,30 @@ def normalizeData():
                 else:
                     normalizedSensMethNum = 0.5
 
-
+                normalizedAttrNumRatio = 0
+                normalizedMethNumRatio = 0
+                
                 if normalizedAttrNum != 0 and not pd.isnull(normalizedAttrNum):
-                    # normalizedAttrNumRatio = (normalizedSensAttrNum / normalizedAttrNum) * 0.5
+                    #normalizedAttrNumRatio = (normalizedSensAttrNum / normalizedAttrNum)
+                    #normalizedAttrNumRatio = min((normalizedSensAttrNum / normalizedAttrNum), 1)
                     normalizedAttrNumRatio = (normalizedSensAttrNum / normalizedAttrNum)
-                    if normalizedAttrNumRatio > 1:
-                        normalizedAttrNumRatio = 1
-                else:
-                    normalizedAttrNumRatio = 0
+                #     if normalizedAttrNumRatio > 1:
+                #         normalizedAttrNumRatio = 1
+                # else:
+                #     normalizedAttrNumRatio = 0
                 
 
                 
                 if normalizedMethNum != 0 and not pd.isnull(normalizedMethNum):
-                    # normalizedMethNumRatio = (normalizedSensMethNum / normalizedMethNum) * 0.5
+                    #normalizedMethNumRatio = (normalizedSensMethNum / normalizedMethNum)
+                    #normalizedMethNumRatio = min((normalizedSensMethNum / normalizedMethNum), 1)
                     normalizedMethNumRatio = (normalizedSensMethNum / normalizedMethNum)
-                    if normalizedMethNumRatio > 1:
-                        normalizedMethNumRatio = 1
-                else:
-                    normalizedMethNumRatio = 0
+                #     if normalizedMethNumRatio > 1:
+                #         normalizedMethNumRatio = 1
+                # else:
+                #     normalizedMethNumRatio = 0
                 
 
-                # normalizedSensitivityRatio = normalizedAttrNumRatio + normalizedMethNumRatio
                 normalizedSensitivityRatio = normalizedAttrNumRatio * 0.5 + normalizedMethNumRatio * 0.5
                 # if normalizedSensitivityRatio > 1:
                 #     normalizedSensitivityRatio = 1
@@ -1884,60 +1887,61 @@ def normalizeData():
 #===============================================================================
 def sortSensitiveClasses():
     
-    with open(os.path.join(OUTPUT_DIR,'Normalized Type Statistic.csv'), 'r') as USSCfile:
+    with open('Output/Normalized Type Statistic.csv', 'r') as USSCfile:
         USSCfileReader = csv.reader(USSCfile)
         next(USSCfileReader)  # Skip the header row
-        sortedSensitiveClasses = sorted(USSCfileReader, key=lambda row: row[1], reverse=True)
+        #sortedSensitiveClasses = sorted(USSCfileReader, key=lambda row: row[1], reverse=True)
+        sortedSensitiveClasses = sorted(USSCfileReader, key=lambda row: float(row[1]), reverse=True)
         
-    with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'w', newline='') as SSCfile:
+    with open('Output/Sorted Normalized Type Statistic.csv', 'w', newline='') as SSCfile:
         SSCfileWriter = csv.writer(SSCfile)
         SSCfileWriter.writerows(sortedSensitiveClasses)
        
     USSCfile.close()
     SSCfile.close() 
 
-    with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'r') as infile:
+    with open('Output/Sorted Normalized Type Statistic.csv', 'r') as infile:
         data = infile.read()
 
-    with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'w', newline='') as outfile:
+    with open('Output/Sorted Normalized Type Statistic.csv', 'w', newline='') as outfile:
         writer = csv.writer(outfile)
         writer.writerow(['CLASS NAME', 'SENSITIVITY LEVEL']) 
         outfile.write(data)
     
-    ####################################################################
+    # ####################################################################
         
-    # with open(os.path.join(OUTPUT_DIR,'Normalized Sensitivity Ratio Statistic.csv'), 'r') as inNSRfile:
+    # with open('Output/Normalized Sensitivity Ratio Statistic.csv', 'r') as inNSRfile:
     #     data = csv.reader(inNSRfile)
     #     next(data)
     #     sortedSensitiveClasses = sorted(data, key=lambda row: row[1], reverse=True)
     #     #print(sortedSensitiveClasses)
-    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Sensitivity Ratio Statistic.csv'), 'w', newline='') as outNSRfile:
+    # with open('Output/Sorted Normalized Sensitivity Ratio Statistic.csv', 'w', newline='') as outNSRfile:
     #     writer = csv.writer(outNSRfile)
     #     writer.writerows(sortedSensitiveClasses)
         
-    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Sensitivity Ratio Statistic.csv'), 'r') as infile:
+    # with open('Output/Sorted Normalized Sensitivity Ratio Statistic.csv', 'r') as infile:
     #     data = infile.read()
         
-    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Sensitivity Ratio Statistic.csv'), 'w', newline='') as outfile:
+    # with open('Output/Sorted Normalized Sensitivity Ratio Statistic.csv', 'w', newline='') as outfile:
     #     writer = csv.writer(outfile)
     #     writer.writerow(['CLASS NAME', 'SENSITIVITY LEVEL']) 
     #     outfile.write(data)
     
     # ####################################################################
     
-    # with open(os.path.join(OUTPUT_DIR,'Normalized Type Statistic.csv'), 'r') as inNTSfile:
+    # with open('Output/Normalized Type Statistic.csv', 'r') as inNTSfile:
     #     data = csv.reader(inNTSfile)
     #     next(data)
     #     sortedSensitiveClasses = sorted(data, key=lambda row: row[1], reverse=True)
     #     #print(sortedSensitiveClasses)
-    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'w', newline='') as outNTSfile:
+    # with open('Output/Sorted Normalized Type Statistic.csv', 'w', newline='') as outNTSfile:
     #     writer = csv.writer(outNTSfile)
     #     writer.writerows(sortedSensitiveClasses)
         
-    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'r') as infile:
+    # with open('Output/Sorted Normalized Type Statistic.csv', 'r') as infile:
     #     data = infile.read()
         
-    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'w', newline='') as outfile:
+    # with open('Output/Sorted Normalized Type Statistic.csv', 'w', newline='') as outfile:
     #     writer = csv.writer(outfile)
     #     writer.writerow(['CLASS NAME', 'SENSITIVITY LEVEL']) 
     #     outfile.write(data)
