@@ -1730,7 +1730,7 @@ def softwareStatistics(classNames, interfaceNames, enumNames):
 #===============================================================================
 def normalizeData():
         
-        df = pd.read_csv(os.path.join(OUTPUT_DIR,'Classifier Statistic.csv'), header=None, skiprows=1)
+        df = pd.read_csv('Output/Classifier Statistic.csv', header=None, skiprows=1)
         
         minAttrNum = df[1].min()
         maxAttrNum = df[1].max()
@@ -1741,7 +1741,7 @@ def normalizeData():
         minSensMethNum = df[4].min()
         maxSensMethNum = df[4].max()
         
-        with open(os.path.join(OUTPUT_DIR,'Normalized Type Statistic.csv'), 'a', newline='') as NTSfile:
+        with open('Output/Normalized Type Statistic.csv', 'a', newline='') as NTSfile:
             normalizedTypeStatisticWriter = csv.writer(NTSfile, dialect='excel')
             normalizedTypeStatisticWriter.writerow(['CLASS NAME', 'NORMALIZED SENSITIVITY LEVEL'])
             
@@ -1774,27 +1774,30 @@ def normalizeData():
                 else:
                     normalizedSensMethNum = 0.5
 
-
+                normalizedAttrNumRatio = 0
+                normalizedMethNumRatio = 0
+                
                 if normalizedAttrNum != 0 and not pd.isnull(normalizedAttrNum):
-                    # normalizedAttrNumRatio = (normalizedSensAttrNum / normalizedAttrNum) * 0.5
+                    #normalizedAttrNumRatio = (normalizedSensAttrNum / normalizedAttrNum)
+                    #normalizedAttrNumRatio = min((normalizedSensAttrNum / normalizedAttrNum), 1)
                     normalizedAttrNumRatio = (normalizedSensAttrNum / normalizedAttrNum)
-                    if normalizedAttrNumRatio > 1:
-                        normalizedAttrNumRatio = 1
-                else:
-                    normalizedAttrNumRatio = 0
+                #     if normalizedAttrNumRatio > 1:
+                #         normalizedAttrNumRatio = 1
+                # else:
+                #     normalizedAttrNumRatio = 0
                 
 
                 
                 if normalizedMethNum != 0 and not pd.isnull(normalizedMethNum):
-                    # normalizedMethNumRatio = (normalizedSensMethNum / normalizedMethNum) * 0.5
+                    #normalizedMethNumRatio = (normalizedSensMethNum / normalizedMethNum)
+                    #normalizedMethNumRatio = min((normalizedSensMethNum / normalizedMethNum), 1)
                     normalizedMethNumRatio = (normalizedSensMethNum / normalizedMethNum)
-                    if normalizedMethNumRatio > 1:
-                        normalizedMethNumRatio = 1
-                else:
-                    normalizedMethNumRatio = 0
+                #     if normalizedMethNumRatio > 1:
+                #         normalizedMethNumRatio = 1
+                # else:
+                #     normalizedMethNumRatio = 0
                 
 
-                # normalizedSensitivityRatio = normalizedAttrNumRatio + normalizedMethNumRatio
                 normalizedSensitivityRatio = normalizedAttrNumRatio * 0.5 + normalizedMethNumRatio * 0.5
                 # if normalizedSensitivityRatio > 1:
                 #     normalizedSensitivityRatio = 1
