@@ -1887,61 +1887,61 @@ def normalizeData():
 #===============================================================================
 def sortSensitiveClasses():
     
-    with open('Output/Normalized Type Statistic.csv', 'r') as USSCfile:
+    with open(os.path.join(OUTPUT_DIR,'Normalized Type Statistic.csv'), 'r') as USSCfile:
         USSCfileReader = csv.reader(USSCfile)
         next(USSCfileReader)  # Skip the header row
         #sortedSensitiveClasses = sorted(USSCfileReader, key=lambda row: row[1], reverse=True)
         sortedSensitiveClasses = sorted(USSCfileReader, key=lambda row: float(row[1]), reverse=True)
         
-    with open('Output/Sorted Normalized Type Statistic.csv', 'w', newline='') as SSCfile:
+    with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'w', newline='') as SSCfile:
         SSCfileWriter = csv.writer(SSCfile)
         SSCfileWriter.writerows(sortedSensitiveClasses)
        
     USSCfile.close()
     SSCfile.close() 
 
-    with open('Output/Sorted Normalized Type Statistic.csv', 'r') as infile:
+    with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'r') as infile:
         data = infile.read()
 
-    with open('Output/Sorted Normalized Type Statistic.csv', 'w', newline='') as outfile:
+    with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'w', newline='') as outfile:
         writer = csv.writer(outfile)
         writer.writerow(['CLASS NAME', 'SENSITIVITY LEVEL']) 
         outfile.write(data)
     
     # ####################################################################
         
-    # with open('Output/Normalized Sensitivity Ratio Statistic.csv', 'r') as inNSRfile:
+    # with open(os.path.join(OUTPUT_DIR,'Normalized Sensitivity Ratio Statistic.csv'), 'r') as inNSRfile:
     #     data = csv.reader(inNSRfile)
     #     next(data)
     #     sortedSensitiveClasses = sorted(data, key=lambda row: row[1], reverse=True)
     #     #print(sortedSensitiveClasses)
-    # with open('Output/Sorted Normalized Sensitivity Ratio Statistic.csv', 'w', newline='') as outNSRfile:
+    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Sensitivity Ratio Statistic.csv'), 'w', newline='') as outNSRfile:
     #     writer = csv.writer(outNSRfile)
     #     writer.writerows(sortedSensitiveClasses)
         
-    # with open('Output/Sorted Normalized Sensitivity Ratio Statistic.csv', 'r') as infile:
+    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Sensitivity Ratio Statistic.csv'), 'r') as infile:
     #     data = infile.read()
         
-    # with open('Output/Sorted Normalized Sensitivity Ratio Statistic.csv', 'w', newline='') as outfile:
+    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Sensitivity Ratio Statistic.csv'), 'w', newline='') as outfile:
     #     writer = csv.writer(outfile)
     #     writer.writerow(['CLASS NAME', 'SENSITIVITY LEVEL']) 
     #     outfile.write(data)
     
     # ####################################################################
     
-    # with open('Output/Normalized Type Statistic.csv', 'r') as inNTSfile:
+    # with open(os.path.join(OUTPUT_DIR,'Normalized Type Statistic.csv'), 'r') as inNTSfile:
     #     data = csv.reader(inNTSfile)
     #     next(data)
     #     sortedSensitiveClasses = sorted(data, key=lambda row: row[1], reverse=True)
     #     #print(sortedSensitiveClasses)
-    # with open('Output/Sorted Normalized Type Statistic.csv', 'w', newline='') as outNTSfile:
+    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'w', newline='') as outNTSfile:
     #     writer = csv.writer(outNTSfile)
     #     writer.writerows(sortedSensitiveClasses)
         
-    # with open('Output/Sorted Normalized Type Statistic.csv', 'r') as infile:
+    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'r') as infile:
     #     data = infile.read()
         
-    # with open('Output/Sorted Normalized Type Statistic.csv', 'w', newline='') as outfile:
+    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'w', newline='') as outfile:
     #     writer = csv.writer(outfile)
     #     writer.writerow(['CLASS NAME', 'SENSITIVITY LEVEL']) 
     #     outfile.write(data)
