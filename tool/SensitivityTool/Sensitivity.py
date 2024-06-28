@@ -1730,7 +1730,7 @@ def softwareStatistics(classNames, interfaceNames, enumNames):
 #===============================================================================
 def normalizeData():
         
-        df = pd.read_csv('Output/Classifier Statistic.csv', header=None, skiprows=1)
+        df = pd.read_csv(os.path.join(OUTPUT_DIR,'Classifier Statistic.csv'), header=None, skiprows=1)
         
         minAttrNum = df[1].min()
         maxAttrNum = df[1].max()
@@ -1741,7 +1741,7 @@ def normalizeData():
         minSensMethNum = df[4].min()
         maxSensMethNum = df[4].max()
         
-        with open('Output/Normalized Type Statistic.csv', 'a', newline='') as NTSfile:
+        with open(os.path.join(OUTPUT_DIR,'Normalized Type Statistic.csv'), 'a', newline='') as NTSfile:
             normalizedTypeStatisticWriter = csv.writer(NTSfile, dialect='excel')
             normalizedTypeStatisticWriter.writerow(['CLASS NAME', 'NORMALIZED SENSITIVITY LEVEL'])
             
