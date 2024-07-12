@@ -5,6 +5,11 @@
 {% block content %}
 
 <div class="row">
+    <div class="col-12 text-center mt-5 mb-5">
+        
+        <span class="text-bold"> Execution time: </span>  {{time}} 
+        {% comment %} <img src="{% static 'tool/results/automation.png' %}" class="pl-3" style="width: 60px;" alt="runtime">   {% endcomment %}
+    </div>
     <div class="col-12">
         <div class="chart-container text-center" style="width: 80%; margin: 0 auto;">
             <h3> Sensitivity per Element</h3>
