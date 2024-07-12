@@ -125,11 +125,25 @@
         data: bars,
         options: {
             scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Sensitivity Level'
                     }
-                }]
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Name of classifiers'
+                    },
+                    ticks: {
+                        //autoSkip: true,
+                        //maxTicksLimit: 20, // Adjust this number as needed
+                        maxRotation: 90,
+                        minRotation: 45
+                    }
+                }
             }
         }
     });
