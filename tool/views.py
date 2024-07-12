@@ -110,7 +110,7 @@ def git_process(request):
                 df = pd.read_csv(os.path.join(output,"Sorted Normalized Type Statistic.csv"))
 
                 # Find all rows where the "SENSITIVITY LEVEL" column has non-zero values
-                non_zero_sensitivity_rows = df[df['SENSITIVITY LEVEL'] != 0]
+                non_zero_sensitivity_rows = df[df['SENSITIVITY LEVEL'] != 0].head(30)
 
                 # Extract class names and sensitivity levels
                 class_names = non_zero_sensitivity_rows['CLASS NAME'].tolist()
@@ -247,7 +247,7 @@ def zip_process(request):
                 df = pd.read_csv(os.path.join(output,"Sorted Normalized Type Statistic.csv"))
 
                 # Find all rows where the "SENSITIVITY LEVEL" column has non-zero values
-                non_zero_sensitivity_rows = df[df['SENSITIVITY LEVEL'] != 0]
+                non_zero_sensitivity_rows = df[df['SENSITIVITY LEVEL'] != 0].head(30)
 
                 # Extract class names and sensitivity levels
                 class_names = non_zero_sensitivity_rows['CLASS NAME'].tolist()
