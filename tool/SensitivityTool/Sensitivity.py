@@ -1296,7 +1296,7 @@ def searchForSensitiveClassInstance(path, term):
 #===============================================================================
 def sensitiveClassCheck():
 
-    keywordsDictionaryPath = 'Keywords Dictionary.csv'
+    keywordsDictionaryPath = 'Config/Keywords Dictionary.csv'
     inputPath = ['Class Attributes.csv', 'Enumeration Enum Constants.csv']
     outputPath = ['Sensitive Classes.csv', 'Sensitive Enumerations.csv']
     
