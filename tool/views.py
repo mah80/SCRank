@@ -109,9 +109,12 @@ def git_process(request):
                 # Bar Chart
                 df = pd.read_csv(os.path.join(output,"Sorted Normalized Type Statistic.csv"))
 
+                # Find all rows where the "SENSITIVITY LEVEL" column has non-zero values
+                non_zero_sensitivity_rows = df[df['SENSITIVITY LEVEL'] != 0]
+
                 # Extract class names and sensitivity levels
-                class_names = df['CLASS NAME'].tolist()
-                sensitivity_levels = df['SENSITIVITY LEVEL'].tolist()
+                class_names = non_zero_sensitivity_rows['CLASS NAME'].tolist()
+                sensitivity_levels = non_zero_sensitivity_rows['SENSITIVITY LEVEL'].tolist()
 
 
                 # Pie Chart 
@@ -243,9 +246,12 @@ def zip_process(request):
                 # Bar Chart
                 df = pd.read_csv(os.path.join(output,"Sorted Normalized Type Statistic.csv"))
 
+                # Find all rows where the "SENSITIVITY LEVEL" column has non-zero values
+                non_zero_sensitivity_rows = df[df['SENSITIVITY LEVEL'] != 0]
+
                 # Extract class names and sensitivity levels
-                class_names = df['CLASS NAME'].tolist()
-                sensitivity_levels = df['SENSITIVITY LEVEL'].tolist()
+                class_names = non_zero_sensitivity_rows['CLASS NAME'].tolist()
+                sensitivity_levels = non_zero_sensitivity_rows['SENSITIVITY LEVEL'].tolist()
 
 
                 # Pie Chart 
