@@ -461,13 +461,6 @@ def analyzer(project_directory, projectID, keywords=None):
 
 
 
-    #Find the statistics of the whole software
-    ####################################################################
-    #softwareStatistics(classNames, interfaceNames)
-    softwareStatistics(classNames, interfaceNames, enumNames)
-    ####################################################################
-
-
 
     #Count the sensitivity level of each class/interface/enumeration based on the number of its attributes, the number of its 
     # sensitive attributes, the number of its methods, and the number of its sensitive methods
@@ -480,6 +473,15 @@ def analyzer(project_directory, projectID, keywords=None):
         elif type == enumNames:
             typeStatistic(enumNames, 'Enumeration')
     ####################################################################
+
+
+
+    #Find the statistics of the whole software
+    ####################################################################
+    #softwareStatistics(classNames, interfaceNames)
+    softwareStatistics(classNames, interfaceNames, enumNames)
+    ####################################################################
+    
 
     #Add a header to the Classifier Statistic.csv file
     ####################################################################
