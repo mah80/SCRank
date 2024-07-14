@@ -1671,6 +1671,22 @@ def addFileHeader(file_path, header):
 
 
 
+##The getClassifierStatistic() function that accepts the file path (which is Classifier Statistic.csv) and classifier name
+##to check if the classifier exist in the file then the function return the row of classifier from the file
+#==============================================================================
+def getClassifierStatistic(file_path, classifier):
+    classifierStatistic = []
+    with open(file_path, 'r', newline='') as CSfile:
+        reader = csv.reader(CSfile)
+        for row in reader:
+            if row[0] == classifier:
+                classifierStatistic.append((row[1], row[2], row[3], row[4], row[5]))
+    CSfile.close
+    return classifierStatistic
+#==============================================================================
+
+
+
 ##The softwareStatistics() function that accepts the class/interface/enumeration name and gives back the number of classes/interfaces/enumerations,
 # the number of sensitive classes, the number of attributes, the number of sensitive attributes, the number of methods, the number of sensitive methods,
 # in the Java software source code and save them in a csv file (Output/Software Statistics.csv)
