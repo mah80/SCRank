@@ -16,7 +16,6 @@ import zipfile
 from django.core.files import File
 from .models import *
 from .helpers.utils import *
-from datetime import datetime
 
 
 # @login_required(login_url='login')
@@ -32,9 +31,6 @@ def git_process(request):
         if request.POST.get("GitHub_repo"):
             # time.sleep(1000)
             try:
-                
-                # Getting Start time
-                start_time = datetime.now()
 
                 output = ''
 
@@ -55,7 +51,6 @@ def git_process(request):
                 projectID = repo_url.rsplit('/', 1)[1]+ "-"+ str(int(time.time() * 1000))
                 project_path =  os.path.join(WORKING_DIR, repo_url.rsplit('/', 1)[1])
                 # print(1,project_path)
-                
                 try:
                     subprocess.check_output(['git', 'clone', repo_url])
                 except subprocess.CalledProcessError as e:
@@ -109,12 +104,9 @@ def git_process(request):
                 # Bar Chart
                 df = pd.read_csv(os.path.join(output,"Sorted Normalized Type Statistic.csv"))
 
-                # Find all rows where the "SENSITIVITY LEVEL" column has non-zero values
-                non_zero_sensitivity_rows = df[df['SENSITIVITY LEVEL'] != 0].head(30)
-
                 # Extract class names and sensitivity levels
-                class_names = non_zero_sensitivity_rows['CLASS NAME'].tolist()
-                sensitivity_levels = non_zero_sensitivity_rows['SENSITIVITY LEVEL'].tolist()
+                class_names = df['CLASS NAME'].tolist()
+                sensitivity_levels = df['SENSITIVITY LEVEL'].tolist()
 
 
                 # Pie Chart 
@@ -145,13 +137,6 @@ def git_process(request):
                     'class_names': class_names,
                     'sensitivity_levels': sensitivity_levels,
                 }
-
-                # Getting End time
-                end_time = datetime.now()
-
-                # Calculate and print the time difference
-                execution_time = time_difference(start_time, end_time)
-
             except Exception as e:
                 print(e)
                 messages.append(f"Error: {e}")
@@ -172,7 +157,7 @@ def git_process(request):
                         print(e)
         
         # Go to results page
-            return render(request, "tool/results.html", context={'data': data, 'zip': obj, 'time': execution_time})
+            return render(request, "tool/results.html", context={'data': data, 'zip': obj})
 
         else:
             messages.append("No repository link or file was provided!")
@@ -185,10 +170,6 @@ def zip_process(request):
     if request.method == 'POST':
         if request.FILES['zip_file']:
             try:
-                # Getting Start time
-                start_time = datetime.now()
-
-
                 if not request.FILES['zip_file'].name.endswith(".zip"):
                     messages.append(f'This is not a ZIP file.')
                     print("This is not a ZIP file.")
@@ -246,12 +227,9 @@ def zip_process(request):
                 # Bar Chart
                 df = pd.read_csv(os.path.join(output,"Sorted Normalized Type Statistic.csv"))
 
-                # Find all rows where the "SENSITIVITY LEVEL" column has non-zero values
-                non_zero_sensitivity_rows = df[df['SENSITIVITY LEVEL'] != 0].head(30)
-
                 # Extract class names and sensitivity levels
-                class_names = non_zero_sensitivity_rows['CLASS NAME'].tolist()
-                sensitivity_levels = non_zero_sensitivity_rows['SENSITIVITY LEVEL'].tolist()
+                class_names = df['CLASS NAME'].tolist()
+                sensitivity_levels = df['SENSITIVITY LEVEL'].tolist()
 
 
                 # Pie Chart 
@@ -282,12 +260,6 @@ def zip_process(request):
                     'class_names': class_names,
                     'sensitivity_levels': sensitivity_levels,
                 }
-
-                # Getting End time
-                end_time = datetime.now()
-
-                # Calculate and print the time difference
-                execution_time = time_difference(start_time, end_time)
             except Exception as e:
                 print(e)
                 messages.append(f"Error: {e}")
@@ -308,7 +280,7 @@ def zip_process(request):
                         print(e)
         
         # Go to results page
-            return render(request, "tool/results.html", context={'data': data, 'zip': obj, 'time': execution_time})
+            return render(request, "tool/results.html", context={'data': data, 'zip': obj})
             
     else:
         messages.append("No repository link or file was provided!")

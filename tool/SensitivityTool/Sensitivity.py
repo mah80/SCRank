@@ -461,6 +461,13 @@ def analyzer(project_directory, projectID, keywords=None):
 
 
 
+    #Find the statistics of the whole software
+    ####################################################################
+    #softwareStatistics(classNames, interfaceNames)
+    softwareStatistics(classNames, interfaceNames, enumNames)
+    ####################################################################
+
+
 
     #Count the sensitivity level of each class/interface/enumeration based on the number of its attributes, the number of its 
     # sensitive attributes, the number of its methods, and the number of its sensitive methods
@@ -473,15 +480,6 @@ def analyzer(project_directory, projectID, keywords=None):
         elif type == enumNames:
             typeStatistic(enumNames, 'Enumeration')
     ####################################################################
-
-
-
-    #Find the statistics of the whole software
-    ####################################################################
-    #softwareStatistics(classNames, interfaceNames)
-    softwareStatistics(classNames, interfaceNames, enumNames)
-    ####################################################################
-    
 
     #Add a header to the Classifier Statistic.csv file
     ####################################################################
@@ -1298,7 +1296,7 @@ def searchForSensitiveClassInstance(path, term):
 #===============================================================================
 def sensitiveClassCheck():
 
-    keywordsDictionaryPath = 'Config/Keywords Dictionary.csv'
+    keywordsDictionaryPath = 'Keywords Dictionary.csv'
     inputPath = ['Class Attributes.csv', 'Enumeration Enum Constants.csv']
     outputPath = ['Sensitive Classes.csv', 'Sensitive Enumerations.csv']
     
@@ -1602,7 +1600,7 @@ def typeStatistic(classNames, type):
             
             
 
-            typeStatisticWriter.writerow([className, classAttributesCounter, noOfSensitiveAttributes, classMethodsCounter, len(sensitiveMethodsUnion), type])         
+            typeStatisticWriter.writerow([className, classAttributesCounter, noOfSensitiveAttributes, classMethodsCounter, len(sensitiveMethodsUnion)])         
  
 
         ##Count the sensitivity level of the class which has only sensitive methods (local variable or parameter based method)
@@ -1613,10 +1611,10 @@ def typeStatistic(classNames, type):
                     temp.extend(searchForSensitiveMethod(path, cn))
                 if  len(temp) > 0:
                     sensitiveMethodsUnion = removeDuplication(temp)
-                    typeStatisticWriter.writerow([cn, methodCounter(typeAttributesFile, cn), 0, methodCounter(typeMethodsFile, cn), len(sensitiveMethodsUnion), type])
+                    typeStatisticWriter.writerow([cn, methodCounter(typeAttributesFile, cn), 0, methodCounter(typeMethodsFile, cn), len(sensitiveMethodsUnion)])
                 
                 elif len(temp) == 0:
-                    typeStatisticWriter.writerow([cn, methodCounter(typeAttributesFile, cn), 0, methodCounter(typeMethodsFile, cn), 0, type])
+                    typeStatisticWriter.writerow([cn, methodCounter(typeAttributesFile, cn), 0, methodCounter(typeMethodsFile, cn), 0])
         
         SCfile.close()
         CAfile.close()
@@ -1673,92 +1671,54 @@ def addFileHeader(file_path, header):
 
 
 
-##The getClassifierStatistic() function that accepts the file path (which is Classifier Statistic.csv) and classifier name
-##to check if the classifier exist in the file then the function return the row of classifier from the file
-#==============================================================================
-def getClassifierStatistic(file_path, classifier):
-    classifierStatistic = []
-    with open(file_path, 'r', newline='') as CSfile:
-        reader = csv.reader(CSfile)
-        for row in reader:
-            if row[0] == classifier:
-                classifierStatistic.append((row[1], row[2], row[3], row[4], row[5]))
-    CSfile.close
-    return classifierStatistic
-#==============================================================================
-
-
-
 ##The softwareStatistics() function that accepts the class/interface/enumeration name and gives back the number of classes/interfaces/enumerations,
 # the number of sensitive classes, the number of attributes, the number of sensitive attributes, the number of methods, the number of sensitive methods,
 # in the Java software source code and save them in a csv file (Output/Software Statistics.csv)
 #===============================================================================
 def softwareStatistics(classNames, interfaceNames, enumNames):
     
-    classifiers = 0
-    classifierAttributes = 0
-    classifierMethods = 0
-    sensitiveClassifiers = 0
+    classes = 0
+    classAttributes = 0
+    classMethods = 0
+    sensitiveClasses = 0
     sensitiveAttributes = 0
     sensitiveMethods = 0
-    classifierStatistic = []
-    classifierStatisticFile = 'Classifier Statistic.csv'
     
     with open(os.path.join(OUTPUT_DIR,'Software Statistics.csv'), 'w', newline='') as file:
         writer = csv.writer(file, dialect='excel')
-        writer.writerow(['NUMBER OF CLASSIFIERS', 'NUMBER OF SENSITIVE CLASSIFIERS', 'NUMBER OF ATTRIBUTES', 'NUMBER OF SENSITIVE ATTRIBUTES', 'NUMBER OF METHODS', 'NUMBER OF SENSITIVE METHODS'])
+        writer.writerow(['NUMBER OF CLASSIFIERS', 'NUMBER OF SENSITIVE CLASSES', 'NUMBER OF ATTRIBUTES', 'NUMBER OF SENSITIVE ATTRIBUTES', 'NUMBER OF METHODS', 'NUMBER OF SENSITIVE METHODS'])
         
         for className in classNames:
-            statistic = []
-            classifierStatistic = getClassifierStatistic(classifierStatisticFile, className)
-            if classifierStatistic:
-                statistic = classifierStatistic[0]
-                if statistic[4] == 'Class':
-                    classifierAttributes += int(statistic[0])
-                    sensitiveAttributes += int(statistic[1])
-                    classifierMethods += int(statistic[2])
-                    sensitiveMethods += int(statistic[3])
-                
-            
-            classifiers += 1
-            if int(statistic[1]) != 0 or int(statistic[3]) != 0:
-                sensitiveClassifiers += 1
+            classAttributes = classAttributes + methodCounter('Class Attributes.csv', className)
+            classMethods = classMethods + methodCounter('Class Methods.csv', className)
+            if searchForSensitiveClassInstance('Sensitive Classes.csv', className):
+                sensitiveClasses = sensitiveClasses + 1
+                sensitiveAttributes = sensitiveAttributes + methodCounter('Sensitive Classes.csv', className)
+                sensitiveMethods = sensitiveMethods + methodCounter('Sensitive Local Variables-Based Methods_Class.csv', className) + methodCounter('Sensitive Parameters-Based Methods_Class.csv', className) + methodCounter('Sensitive Local Identifiers-Based Methods_Class.csv', className)
+            classes = classes + 1
         
            
         for interfaceName in interfaceNames:
-            statistic = []
-            classifierStatistic = getClassifierStatistic(classifierStatisticFile, interfaceName)
-            if classifierStatistic:
-                statistic = classifierStatistic[0]
-                if statistic[4] == 'Interface':
-                    classifierAttributes += int(statistic[0])
-                    sensitiveAttributes += int(statistic[1])
-                    classifierMethods += int(statistic[2])
-                    sensitiveMethods += int(statistic[3])
-            classifiers += 1
-            if int(statistic[3]) != 0:
-                sensitiveClassifiers += 1
-                
+            classAttributes = classAttributes + methodCounter('Interface Attributes.csv', interfaceName)
+            classMethods = classMethods + methodCounter('Interface Methods.csv', interfaceName)
+            if searchForSensitiveClassInstance('Sensitive Interfaces.csv', interfaceName):
+                sensitiveClasses = sensitiveClasses + 1
+                sensitiveAttributes = sensitiveAttributes + methodCounter('Sensitive Interfaces.csv', interfaceName)
+                sensitiveMethods = sensitiveMethods + methodCounter('Sensitive Parameters-Based Methods_Interface.csv', interfaceName)
+            classes = classes + 1
         
         for enumName in enumNames:
-            statistic = []
-            classifierStatistic = getClassifierStatistic(classifierStatisticFile, enumName)
-            if classifierStatistic:
-                statistic = classifierStatistic[0]
-                if statistic[4] == 'Enumeration':
-                    classifierAttributes += int(statistic[0])
-                    sensitiveAttributes += int(statistic[1])
-                    classifierMethods += int(statistic[2])
-                    sensitiveMethods += int(statistic[3])
-            classifiers += 1
-            if int(statistic[1]) != 0:
-                sensitiveClassifiers += 1
-
+            classAttributes = classAttributes + methodCounter('Enumeration Enum Constants.csv', enumName)
+            classMethods = classMethods + methodCounter('Enumeration Methods.csv', enumName)
+            if searchForSensitiveClassInstance('Sensitive Enumerations.csv', enumName):
+                sensitiveClasses = sensitiveClasses + 1
+                sensitiveAttributes = sensitiveAttributes + methodCounter('Sensitive Enumerations.csv', enumName)
+                sensitiveMethods = sensitiveMethods + methodCounter('Sensitive Local Variables-Based Methods_Enumeration.csv', enumName) + methodCounter('Sensitive Parameters-Based Methods_Enumeration.csv', enumName) + methodCounter('Sensitive Local Identifiers-Based Methods_Enumeration.csv', enumName)
+            classes = classes + 1
             
-        writer.writerow([classifiers, sensitiveClassifiers, classifierAttributes, sensitiveAttributes, classifierMethods, sensitiveMethods])
+        writer.writerow([classes, sensitiveClasses, classAttributes, sensitiveAttributes, classMethods, sensitiveMethods])
     file.close()
 #===============================================================================
-
 
 
 
@@ -1770,7 +1730,7 @@ def softwareStatistics(classNames, interfaceNames, enumNames):
 #===============================================================================
 def normalizeData():
         
-        df = pd.read_csv(os.path.join(OUTPUT_DIR,'Classifier Statistic.csv'), header=None, skiprows=1)
+        df = pd.read_csv('Output/Classifier Statistic.csv', header=None, skiprows=1)
         
         minAttrNum = df[1].min()
         maxAttrNum = df[1].max()
@@ -1781,7 +1741,7 @@ def normalizeData():
         minSensMethNum = df[4].min()
         maxSensMethNum = df[4].max()
         
-        with open(os.path.join(OUTPUT_DIR,'Normalized Type Statistic.csv'), 'a', newline='') as NTSfile:
+        with open('Output/Normalized Type Statistic.csv', 'a', newline='') as NTSfile:
             normalizedTypeStatisticWriter = csv.writer(NTSfile, dialect='excel')
             normalizedTypeStatisticWriter.writerow(['CLASS NAME', 'NORMALIZED SENSITIVITY LEVEL'])
             
@@ -1927,61 +1887,61 @@ def normalizeData():
 #===============================================================================
 def sortSensitiveClasses():
     
-    with open(os.path.join(OUTPUT_DIR,'Normalized Type Statistic.csv'), 'r') as USSCfile:
+    with open('Output/Normalized Type Statistic.csv', 'r') as USSCfile:
         USSCfileReader = csv.reader(USSCfile)
         next(USSCfileReader)  # Skip the header row
         #sortedSensitiveClasses = sorted(USSCfileReader, key=lambda row: row[1], reverse=True)
         sortedSensitiveClasses = sorted(USSCfileReader, key=lambda row: float(row[1]), reverse=True)
         
-    with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'w', newline='') as SSCfile:
+    with open('Output/Sorted Normalized Type Statistic.csv', 'w', newline='') as SSCfile:
         SSCfileWriter = csv.writer(SSCfile)
         SSCfileWriter.writerows(sortedSensitiveClasses)
        
     USSCfile.close()
     SSCfile.close() 
 
-    with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'r') as infile:
+    with open('Output/Sorted Normalized Type Statistic.csv', 'r') as infile:
         data = infile.read()
 
-    with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'w', newline='') as outfile:
+    with open('Output/Sorted Normalized Type Statistic.csv', 'w', newline='') as outfile:
         writer = csv.writer(outfile)
         writer.writerow(['CLASS NAME', 'SENSITIVITY LEVEL']) 
         outfile.write(data)
     
     # ####################################################################
         
-    # with open(os.path.join(OUTPUT_DIR,'Normalized Sensitivity Ratio Statistic.csv'), 'r') as inNSRfile:
+    # with open('Output/Normalized Sensitivity Ratio Statistic.csv', 'r') as inNSRfile:
     #     data = csv.reader(inNSRfile)
     #     next(data)
     #     sortedSensitiveClasses = sorted(data, key=lambda row: row[1], reverse=True)
     #     #print(sortedSensitiveClasses)
-    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Sensitivity Ratio Statistic.csv'), 'w', newline='') as outNSRfile:
+    # with open('Output/Sorted Normalized Sensitivity Ratio Statistic.csv', 'w', newline='') as outNSRfile:
     #     writer = csv.writer(outNSRfile)
     #     writer.writerows(sortedSensitiveClasses)
         
-    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Sensitivity Ratio Statistic.csv'), 'r') as infile:
+    # with open('Output/Sorted Normalized Sensitivity Ratio Statistic.csv', 'r') as infile:
     #     data = infile.read()
         
-    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Sensitivity Ratio Statistic.csv'), 'w', newline='') as outfile:
+    # with open('Output/Sorted Normalized Sensitivity Ratio Statistic.csv', 'w', newline='') as outfile:
     #     writer = csv.writer(outfile)
     #     writer.writerow(['CLASS NAME', 'SENSITIVITY LEVEL']) 
     #     outfile.write(data)
     
     # ####################################################################
     
-    # with open(os.path.join(OUTPUT_DIR,'Normalized Type Statistic.csv'), 'r') as inNTSfile:
+    # with open('Output/Normalized Type Statistic.csv', 'r') as inNTSfile:
     #     data = csv.reader(inNTSfile)
     #     next(data)
     #     sortedSensitiveClasses = sorted(data, key=lambda row: row[1], reverse=True)
     #     #print(sortedSensitiveClasses)
-    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'w', newline='') as outNTSfile:
+    # with open('Output/Sorted Normalized Type Statistic.csv', 'w', newline='') as outNTSfile:
     #     writer = csv.writer(outNTSfile)
     #     writer.writerows(sortedSensitiveClasses)
         
-    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'r') as infile:
+    # with open('Output/Sorted Normalized Type Statistic.csv', 'r') as infile:
     #     data = infile.read()
         
-    # with open(os.path.join(OUTPUT_DIR,'Sorted Normalized Type Statistic.csv'), 'w', newline='') as outfile:
+    # with open('Output/Sorted Normalized Type Statistic.csv', 'w', newline='') as outfile:
     #     writer = csv.writer(outfile)
     #     writer.writerow(['CLASS NAME', 'SENSITIVITY LEVEL']) 
     #     outfile.write(data)
