@@ -136,7 +136,7 @@ def git_process(request):
                 non_sensitive_methods = total_methods - sensitive_methods
 
                 data = {
-                    'labels': ['Sensitive Classes', 'Non-sensitive Classes'],
+                    'labels': ['Sensitive Classifiers', 'Non-sensitive Classifiers'],
                     'values': [sensitive_classes, non_sensitive_classes],
                     'labels_attributes': ['Sensitive Attributes', 'Non-sensitive Attributes'],
                     'values_attributes': [sensitive_attributes, non_sensitive_attributes],
@@ -273,7 +273,7 @@ def zip_process(request):
                 non_sensitive_methods = total_methods - sensitive_methods
 
                 data = {
-                    'labels': ['Sensitive Classes', 'Non-sensitive Classes'],
+                    'labels': ['Sensitive Classifiers', 'Non-Sensitive Classifiers'],
                     'values': [sensitive_classes, non_sensitive_classes],
                     'labels_attributes': ['Sensitive Attributes', 'Non-sensitive Attributes'],
                     'values_attributes': [sensitive_attributes, non_sensitive_attributes],
