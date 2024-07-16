@@ -1600,7 +1600,7 @@ def typeStatistic(classNames, type):
             
             
 
-            typeStatisticWriter.writerow([className, classAttributesCounter, noOfSensitiveAttributes, classMethodsCounter, len(sensitiveMethodsUnion)])         
+            typeStatisticWriter.writerow([className, classAttributesCounter, noOfSensitiveAttributes, classMethodsCounter, len(sensitiveMethodsUnion), type])         
  
 
         ##Count the sensitivity level of the class which has only sensitive methods (local variable or parameter based method)
@@ -1611,10 +1611,10 @@ def typeStatistic(classNames, type):
                     temp.extend(searchForSensitiveMethod(path, cn))
                 if  len(temp) > 0:
                     sensitiveMethodsUnion = removeDuplication(temp)
-                    typeStatisticWriter.writerow([cn, methodCounter(typeAttributesFile, cn), 0, methodCounter(typeMethodsFile, cn), len(sensitiveMethodsUnion)])
+                    typeStatisticWriter.writerow([cn, methodCounter(typeAttributesFile, cn), 0, methodCounter(typeMethodsFile, cn), len(sensitiveMethodsUnion), type])
                 
                 elif len(temp) == 0:
-                    typeStatisticWriter.writerow([cn, methodCounter(typeAttributesFile, cn), 0, methodCounter(typeMethodsFile, cn), 0])
+                    typeStatisticWriter.writerow([cn, methodCounter(typeAttributesFile, cn), 0, methodCounter(typeMethodsFile, cn), 0, type])
         
         SCfile.close()
         CAfile.close()
