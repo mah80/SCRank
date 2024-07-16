@@ -122,7 +122,7 @@ def git_process(request):
 
                 # Prepare the data for Chart.js
                 total_classes = df['NUMBER OF CLASSIFIERS'].iloc[0]
-                sensitive_classes = df['NUMBER OF SENSITIVE CLASSES'].iloc[0]
+                sensitive_classes = df['NUMBER OF SENSITIVE CLASSIFIERS'].iloc[0]
                 non_sensitive_classes = total_classes - sensitive_classes
 
                 # Prepare the data for Chart.js for attributes and sensitive attributes
@@ -259,7 +259,7 @@ def zip_process(request):
 
                 # Prepare the data for Chart.js
                 total_classes = df['NUMBER OF CLASSIFIERS'].iloc[0]
-                sensitive_classes = df['NUMBER OF SENSITIVE CLASSES'].iloc[0]
+                sensitive_classes = df['NUMBER OF SENSITIVE CLASSIFIERS'].iloc[0]
                 non_sensitive_classes = total_classes - sensitive_classes
 
                 # Prepare the data for Chart.js for attributes and sensitive attributes
