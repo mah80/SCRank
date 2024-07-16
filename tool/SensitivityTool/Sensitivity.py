@@ -1687,7 +1687,7 @@ def getClassifierStatistic(file_path, classifier):
 
 
 ##The softwareStatistics() function that accepts the class/interface/enumeration name and gives back the number of classes/interfaces/enumerations,
-# the number of sensitive classes, the number of attributes, the number of sensitive attributes, the number of methods, the number of sensitive methods,
+# the number of sensitive classifiers, the number of attributes, the number of sensitive attributes, the number of methods, the number of sensitive methods,
 # in the Java software source code and save them in a csv file (Output/Software Statistics.csv)
 #===============================================================================
 def softwareStatistics(classNames, interfaceNames, enumNames):
@@ -1703,7 +1703,7 @@ def softwareStatistics(classNames, interfaceNames, enumNames):
     
     with open(os.path.join(OUTPUT_DIR,'Software Statistics.csv'), 'w', newline='') as file:
         writer = csv.writer(file, dialect='excel')
-        writer.writerow(['NUMBER OF CLASSIFIERS', 'NUMBER OF SENSITIVE CLASSIFIERS', 'NUMBER OF ATTRIBUTES', 'NUMBER OF SENSITIVE ATTRIBUTES', 'NUMBER OF METHODS', 'NUMBER OF SENSITIVE METHODS'])
+        writer.writerow(['NUMBER OF CLASSIFIERS', 'NUMBER OF SENSITIVE CLASSES', 'NUMBER OF ATTRIBUTES', 'NUMBER OF SENSITIVE ATTRIBUTES', 'NUMBER OF METHODS', 'NUMBER OF SENSITIVE METHODS'])
         
         for className in classNames:
             statistic = []
