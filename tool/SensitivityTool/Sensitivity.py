@@ -483,7 +483,7 @@ def analyzer(project_directory, projectID, keywords=None):
 
     #Add a header to the Classifier Statistic.csv file
     ####################################################################
-    addFileHeader('Classifier Statistic.csv', ['Classifiers', 'Number of Attributes', 'Number of Sensitive Attributes', 'Number of Methods', 'Number of Sensitive Methods'])
+    addFileHeader('Classifier Statistic.csv', ['Classifiers', 'Number of Attributes', 'Number of Sensitive Attributes', 'Number of Methods', 'Number of Sensitive Methods', 'Type of Classifier'])
     ####################################################################
 
 
