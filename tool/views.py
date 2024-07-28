@@ -122,7 +122,7 @@ def git_process(request):
 
                 # Prepare the data for Chart.js
                 total_classes = df['NUMBER OF CLASSIFIERS'].iloc[0]
-                sensitive_classes = df['NUMBER OF SENSITIVE CLASSES'].iloc[0]
+                sensitive_classes = df['NUMBER OF SENSITIVE CLASSIFIERS'].iloc[0]
                 non_sensitive_classes = total_classes - sensitive_classes
 
                 # Prepare the data for Chart.js for attributes and sensitive attributes
@@ -136,7 +136,7 @@ def git_process(request):
                 non_sensitive_methods = total_methods - sensitive_methods
 
                 data = {
-                    'labels': ['Sensitive Classes', 'Non-sensitive Classes'],
+                    'labels': ['Sensitive Classifiers', 'Non-sensitive Classifiers'],
                     'values': [sensitive_classes, non_sensitive_classes],
                     'labels_attributes': ['Sensitive Attributes', 'Non-sensitive Attributes'],
                     'values_attributes': [sensitive_attributes, non_sensitive_attributes],
@@ -259,7 +259,7 @@ def zip_process(request):
 
                 # Prepare the data for Chart.js
                 total_classes = df['NUMBER OF CLASSIFIERS'].iloc[0]
-                sensitive_classes = df['NUMBER OF SENSITIVE CLASSES'].iloc[0]
+                sensitive_classes = df['NUMBER OF SENSITIVE CLASSIFIERS'].iloc[0]
                 non_sensitive_classes = total_classes - sensitive_classes
 
                 # Prepare the data for Chart.js for attributes and sensitive attributes
@@ -273,7 +273,7 @@ def zip_process(request):
                 non_sensitive_methods = total_methods - sensitive_methods
 
                 data = {
-                    'labels': ['Sensitive Classes', 'Non-sensitive Classes'],
+                    'labels': ['Sensitive Classifiers', 'Non-Sensitive Classifiers'],
                     'values': [sensitive_classes, non_sensitive_classes],
                     'labels_attributes': ['Sensitive Attributes', 'Non-sensitive Attributes'],
                     'values_attributes': [sensitive_attributes, non_sensitive_attributes],

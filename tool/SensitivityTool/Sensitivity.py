@@ -461,14 +461,6 @@ def analyzer(project_directory, projectID, keywords=None):
 
 
 
-    #Find the statistics of the whole software
-    ####################################################################
-    #softwareStatistics(classNames, interfaceNames)
-    softwareStatistics(classNames, interfaceNames, enumNames)
-    ####################################################################
-
-
-
     #Count the sensitivity level of each class/interface/enumeration based on the number of its attributes, the number of its 
     # sensitive attributes, the number of its methods, and the number of its sensitive methods
     ####################################################################
@@ -481,9 +473,17 @@ def analyzer(project_directory, projectID, keywords=None):
             typeStatistic(enumNames, 'Enumeration')
     ####################################################################
 
+
+    #Find the statistics of the whole software
+    ####################################################################
+    #softwareStatistics(classNames, interfaceNames)
+    softwareStatistics(classNames, interfaceNames, enumNames)
+    ####################################################################
+    
+
     #Add a header to the Classifier Statistic.csv file
     ####################################################################
-    addFileHeader('Classifier Statistic.csv', ['Classifiers', 'Number of Attributes', 'Number of Sensitive Attributes', 'Number of Methods', 'Number of Sensitive Methods'])
+    addFileHeader('Classifier Statistic.csv', ['Classifiers', 'Number of Attributes', 'Number of Sensitive Attributes', 'Number of Methods', 'Number of Sensitive Methods', 'Type of Classifier'])
     ####################################################################
 
 
@@ -1600,7 +1600,7 @@ def typeStatistic(classNames, type):
             
             
 
-            typeStatisticWriter.writerow([className, classAttributesCounter, noOfSensitiveAttributes, classMethodsCounter, len(sensitiveMethodsUnion)])         
+            typeStatisticWriter.writerow([className, classAttributesCounter, noOfSensitiveAttributes, classMethodsCounter, len(sensitiveMethodsUnion), type])         
  
 
         ##Count the sensitivity level of the class which has only sensitive methods (local variable or parameter based method)
@@ -1611,10 +1611,10 @@ def typeStatistic(classNames, type):
                     temp.extend(searchForSensitiveMethod(path, cn))
                 if  len(temp) > 0:
                     sensitiveMethodsUnion = removeDuplication(temp)
-                    typeStatisticWriter.writerow([cn, methodCounter(typeAttributesFile, cn), 0, methodCounter(typeMethodsFile, cn), len(sensitiveMethodsUnion)])
+                    typeStatisticWriter.writerow([cn, methodCounter(typeAttributesFile, cn), 0, methodCounter(typeMethodsFile, cn), len(sensitiveMethodsUnion), type])
                 
                 elif len(temp) == 0:
-                    typeStatisticWriter.writerow([cn, methodCounter(typeAttributesFile, cn), 0, methodCounter(typeMethodsFile, cn), 0])
+                    typeStatisticWriter.writerow([cn, methodCounter(typeAttributesFile, cn), 0, methodCounter(typeMethodsFile, cn), 0, type])
         
         SCfile.close()
         CAfile.close()
@@ -1670,53 +1670,105 @@ def addFileHeader(file_path, header):
 #===============================================================================
 
 
+##The getClassifierStatistic() function that accepts the file path (which is Classifier Statistic.csv) and classifier name
+##to check if the classifier exist in the file then the function return the row of classifier from the file
+#==============================================================================
+def getClassifierStatistic(file_path, classifier):
+    classifierStatistic = []
+    with open(os.path.join(OUTPUT_DIR,file_path), 'r', newline='') as CSfile:
+        reader = csv.reader(CSfile)
+        for row in reader:
+            if row[0] == classifier:
+                #if len(row) >= 5:
+                classifierStatistic.append((row[1], row[2], row[3], row[4], row[5]))
+    CSfile.close
+    return classifierStatistic
+#==============================================================================
+
 
 ##The softwareStatistics() function that accepts the class/interface/enumeration name and gives back the number of classes/interfaces/enumerations,
-# the number of sensitive classes, the number of attributes, the number of sensitive attributes, the number of methods, the number of sensitive methods,
+# the number of sensitive classifiers, the number of attributes, the number of sensitive attributes, the number of methods, the number of sensitive methods,
 # in the Java software source code and save them in a csv file (Output/Software Statistics.csv)
 #===============================================================================
 def softwareStatistics(classNames, interfaceNames, enumNames):
     
-    classes = 0
-    classAttributes = 0
-    classMethods = 0
-    sensitiveClasses = 0
+    classifiers = 0
+    classifierAttributes = 0
+    classifierMethods = 0
+    sensitiveClassifiers = 0
     sensitiveAttributes = 0
     sensitiveMethods = 0
+    classifierStatistic = []
+    classifierStatisticFile = 'Classifier Statistic.csv'
     
     with open(os.path.join(OUTPUT_DIR,'Software Statistics.csv'), 'w', newline='') as file:
         writer = csv.writer(file, dialect='excel')
-        writer.writerow(['NUMBER OF CLASSIFIERS', 'NUMBER OF SENSITIVE CLASSES', 'NUMBER OF ATTRIBUTES', 'NUMBER OF SENSITIVE ATTRIBUTES', 'NUMBER OF METHODS', 'NUMBER OF SENSITIVE METHODS'])
+        writer.writerow(['NUMBER OF CLASSIFIERS', 'NUMBER OF SENSITIVE CLASSIFIERS', 'NUMBER OF ATTRIBUTES', 'NUMBER OF SENSITIVE ATTRIBUTES', 'NUMBER OF METHODS', 'NUMBER OF SENSITIVE METHODS'])
         
         for className in classNames:
-            classAttributes = classAttributes + methodCounter('Class Attributes.csv', className)
-            classMethods = classMethods + methodCounter('Class Methods.csv', className)
-            if searchForSensitiveClassInstance('Sensitive Classes.csv', className):
-                sensitiveClasses = sensitiveClasses + 1
-                sensitiveAttributes = sensitiveAttributes + methodCounter('Sensitive Classes.csv', className)
-                sensitiveMethods = sensitiveMethods + methodCounter('Sensitive Local Variables-Based Methods_Class.csv', className) + methodCounter('Sensitive Parameters-Based Methods_Class.csv', className) + methodCounter('Sensitive Local Identifiers-Based Methods_Class.csv', className)
-            classes = classes + 1
+            statistic = []
+            classifierStatistic = getClassifierStatistic(classifierStatisticFile, className)
+            if classifierStatistic:
+                statistic = classifierStatistic[0]
+                if statistic[4] == 'Class':
+                    classifierAttributes += int(statistic[0])
+                    sensitiveAttributes += int(statistic[1])
+                    classifierMethods += int(statistic[2])
+                    sensitiveMethods += int(statistic[3])
+                
+            
+            # classifierAttributes = classifierAttributes + methodCounter('Output/Class Attributes.csv', className)
+            # classifierMethods = classifierMethods + methodCounter('Output/Class Methods.csv', className)
+            # if searchForSensitiveClassInstance('Output/Sensitive Classes.csv', className):
+            #     sensitiveClassifiers = sensitiveClassifiers + 1
+            #     sensitiveAttributes = sensitiveAttributes + methodCounter('Output/Sensitive Classes.csv', className)
+            #     sensitiveMethods = sensitiveMethods + methodCounter('Output/Sensitive Local Variables-Based Methods_Class.csv', className) + methodCounter('Output/Sensitive Parameters-Based Methods_Class.csv', className) + methodCounter('Output/Sensitive Local Identifiers-Based Methods_Class.csv', className)
+            classifiers += 1
+            if int(statistic[1]) != 0 or int(statistic[3]) != 0:
+                sensitiveClassifiers += 1
         
            
         for interfaceName in interfaceNames:
-            classAttributes = classAttributes + methodCounter('Interface Attributes.csv', interfaceName)
-            classMethods = classMethods + methodCounter('Interface Methods.csv', interfaceName)
-            if searchForSensitiveClassInstance('Sensitive Interfaces.csv', interfaceName):
-                sensitiveClasses = sensitiveClasses + 1
-                sensitiveAttributes = sensitiveAttributes + methodCounter('Sensitive Interfaces.csv', interfaceName)
-                sensitiveMethods = sensitiveMethods + methodCounter('Sensitive Parameters-Based Methods_Interface.csv', interfaceName)
-            classes = classes + 1
+            statistic = []
+            classifierStatistic = getClassifierStatistic(classifierStatisticFile, interfaceName)
+            if classifierStatistic:
+                statistic = classifierStatistic[0]
+                if statistic[4] == 'Interface':
+                    classifierAttributes += int(statistic[0])
+                    sensitiveAttributes += int(statistic[1])
+                    classifierMethods += int(statistic[2])
+                    sensitiveMethods += int(statistic[3])
+            # classifierAttributes = classifierAttributes + methodCounter('Output/Interface Attributes.csv', interfaceName)
+            # classifierMethods = classifierMethods + methodCounter('Output/Interface Methods.csv', interfaceName)
+            # if searchForSensitiveClassInstance('Output/Sensitive Parameters-Based Methods_Interface.csv', interfaceName):
+            #     sensitiveClassifiers = sensitiveClassifiers + 1
+            #     sensitiveAttributes = sensitiveAttributes + methodCounter('Output/Sensitive Interfaces.csv', interfaceName)
+            #     sensitiveMethods = sensitiveMethods + methodCounter('Output/Sensitive Parameters-Based Methods_Interface.csv', interfaceName)
+            classifiers += 1
+            if int(statistic[3]) != 0:
+                sensitiveClassifiers += 1
         
         for enumName in enumNames:
-            classAttributes = classAttributes + methodCounter('Enumeration Enum Constants.csv', enumName)
-            classMethods = classMethods + methodCounter('Enumeration Methods.csv', enumName)
-            if searchForSensitiveClassInstance('Sensitive Enumerations.csv', enumName):
-                sensitiveClasses = sensitiveClasses + 1
-                sensitiveAttributes = sensitiveAttributes + methodCounter('Sensitive Enumerations.csv', enumName)
-                sensitiveMethods = sensitiveMethods + methodCounter('Sensitive Local Variables-Based Methods_Enumeration.csv', enumName) + methodCounter('Sensitive Parameters-Based Methods_Enumeration.csv', enumName) + methodCounter('Sensitive Local Identifiers-Based Methods_Enumeration.csv', enumName)
-            classes = classes + 1
+            statistic = []
+            classifierStatistic = getClassifierStatistic(classifierStatisticFile, enumName)
+            if classifierStatistic:
+                statistic = classifierStatistic[0]
+                if statistic[4] == 'Enumeration':
+                    classifierAttributes += int(statistic[0])
+                    sensitiveAttributes += int(statistic[1])
+                    classifierMethods += int(statistic[2])
+                    sensitiveMethods += int(statistic[3])
+            # classifierAttributes = classifierAttributes + methodCounter('Output/Enumeration Enum Constants.csv', enumName)
+            # classifierMethods = classifierMethods + methodCounter('Output/Enumeration Methods.csv', enumName)
+            # if searchForSensitiveClassInstance('Output/Sensitive Enumerations.csv', enumName):
+            #     sensitiveClassifiers = sensitiveClassifiers + 1
+            #     sensitiveAttributes = sensitiveAttributes + methodCounter('Output/Sensitive Enumerations.csv', enumName)
+            #     sensitiveMethods = sensitiveMethods + methodCounter('Output/Sensitive Local Variables-Based Methods_Enumeration.csv', enumName) + methodCounter('Output/Sensitive Parameters-Based Methods_Enumeration.csv', enumName) + methodCounter('Output/Sensitive Local Identifiers-Based Methods_Enumeration.csv', enumName)
+            classifiers += 1
+            if int(statistic[1]) != 0:
+                sensitiveClassifiers += 1
             
-        writer.writerow([classes, sensitiveClasses, classAttributes, sensitiveAttributes, classMethods, sensitiveMethods])
+        writer.writerow([classifiers, sensitiveClassifiers, classifierAttributes, sensitiveAttributes, classifierMethods, sensitiveMethods])
     file.close()
 #===============================================================================
 
