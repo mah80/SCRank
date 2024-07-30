@@ -117,31 +117,7 @@ def git_process(request):
                 sensitivity_levels = non_zero_sensitivity_rows['SENSITIVITY LEVEL'].tolist()
 
 
-                # Pie Chart 
-                df = pd.read_csv(os.path.join(output,"Software Statistics.csv"))
-
-                # Prepare the data for Chart.js
-                total_classes = df['NUMBER OF CLASSIFIERS'].iloc[0]
-                sensitive_classes = df['NUMBER OF SENSITIVE CLASSIFIERS'].iloc[0]
-                non_sensitive_classes = total_classes - sensitive_classes
-
-                # Prepare the data for Chart.js for attributes and sensitive attributes
-                total_attributes = df['NUMBER OF ATTRIBUTES'].iloc[0]
-                sensitive_attributes = df['NUMBER OF SENSITIVE ATTRIBUTES'].iloc[0]
-                non_sensitive_attributes = total_attributes - sensitive_attributes
-
-                # Prepare the data for Chart.js for methods and sensitive methods
-                total_methods = df['NUMBER OF METHODS'].iloc[0]
-                sensitive_methods = df['NUMBER OF SENSITIVE METHODS'].iloc[0]
-                non_sensitive_methods = total_methods - sensitive_methods
-
                 data = {
-                    'labels': ['Sensitive Classifiers', 'Non-sensitive Classifiers'],
-                    'values': [sensitive_classes, non_sensitive_classes],
-                    'labels_attributes': ['Sensitive Attributes', 'Non-sensitive Attributes'],
-                    'values_attributes': [sensitive_attributes, non_sensitive_attributes],
-                    'labels_methods': ['Sensitive Methods', 'Non-sensitive Methods'],
-                    'values_methods': [sensitive_methods, non_sensitive_methods],
                     'class_names': class_names,
                     'sensitivity_levels': sensitivity_levels,
                 }
@@ -253,32 +229,7 @@ def zip_process(request):
                 class_names = non_zero_sensitivity_rows['CLASS NAME'].tolist()
                 sensitivity_levels = non_zero_sensitivity_rows['SENSITIVITY LEVEL'].tolist()
 
-
-                # Pie Chart 
-                df = pd.read_csv(os.path.join(output,"Software Statistics.csv"))
-
-                # Prepare the data for Chart.js
-                total_classes = df['NUMBER OF CLASSIFIERS'].iloc[0]
-                sensitive_classes = df['NUMBER OF SENSITIVE CLASSIFIERS'].iloc[0]
-                non_sensitive_classes = total_classes - sensitive_classes
-
-                # Prepare the data for Chart.js for attributes and sensitive attributes
-                total_attributes = df['NUMBER OF ATTRIBUTES'].iloc[0]
-                sensitive_attributes = df['NUMBER OF SENSITIVE ATTRIBUTES'].iloc[0]
-                non_sensitive_attributes = total_attributes - sensitive_attributes
-
-                # Prepare the data for Chart.js for methods and sensitive methods
-                total_methods = df['NUMBER OF METHODS'].iloc[0]
-                sensitive_methods = df['NUMBER OF SENSITIVE METHODS'].iloc[0]
-                non_sensitive_methods = total_methods - sensitive_methods
-
                 data = {
-                    'labels': ['Sensitive Classifiers', 'Non-Sensitive Classifiers'],
-                    'values': [sensitive_classes, non_sensitive_classes],
-                    'labels_attributes': ['Sensitive Attributes', 'Non-sensitive Attributes'],
-                    'values_attributes': [sensitive_attributes, non_sensitive_attributes],
-                    'labels_methods': ['Sensitive Methods', 'Non-sensitive Methods'],
-                    'values_methods': [sensitive_methods, non_sensitive_methods],
                     'class_names': class_names,
                     'sensitivity_levels': sensitivity_levels,
                 }
