@@ -477,7 +477,7 @@ def analyzer(project_directory, projectID, keywords=None):
     #Find the statistics of the whole software
     ####################################################################
     #softwareStatistics(classNames, interfaceNames)
-    softwareStatistics(classNames, interfaceNames, enumNames)
+    #softwareStatistics(classNames, interfaceNames, enumNames)
     ####################################################################
     
 
