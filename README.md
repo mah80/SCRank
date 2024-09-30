@@ -70,3 +70,6 @@ Quit the server with CONTROL-C.
 Open your web browser and navigate to [http://127.0.0.1:8000/tool](http://127.0.0.1:8000/tool) to view the app.
 
 ```
+# Class-Sensitivity-Attributes-and-Methods-Check
+This project reads the java source code, generates its abstract syntax tree, and navigates it to identify each sensitive class based on the attributes and methods. The class is classified as sensitive if it has at least one sensitive attribute or it has at least one sensitive method. The attribute is classified a sensitive attribute if it exists in the dictionary of sensitive keywords. The method is classified as sensitive if: it has at least one parameter which is an object from a sensitive class, it has at least one local variable which is an object from a sensitive class, it has an assignment of a sensitive attribute in the same class.
+```
