@@ -7,10 +7,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <link href="{% static 'tool/css/styles.css' %}" rel="stylesheet" >
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script><link href="{% static 'tool/css/styles.css' %}" rel="stylesheet" >
     <script src="{% static 'tool/js/index.js'%}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>{% block css %} {% endblock %}</style>
-    <script>{% block js %} {% endblock %}</script>
+    {% block js %} {% endblock %}
     <title>{% block title %} {% endblock %}</title>
 </head>
 </body>
@@ -30,8 +31,11 @@
                 <a class="nav-link {% if url_name == 'index' %}active{% endif %}" aria-current="page" href="{% url 'index'%}" >Home</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link {% if url_name == 'report' %}active{% endif %}" href="{% url 'report'%}" >Reports</a>
+                <a class="nav-link {% if url_name == 'edit_keywords_dictionary' %}active{% endif %}" href="{% url 'edit_keywords_dictionary'%}" >Keywords</a>
               </li>
+              {% comment %} <li class="nav-item">
+                <a class="nav-link {% if url_name == 'report' %}active{% endif %}" href="{% url 'report'%}" >Reports</a>
+              </li> {% endcomment %}
               {% if user.is_authenticated and user.is_staff %}
               <li class="nav-item">
                 <a class="nav-link" href="\admin">Admin Panel</a>

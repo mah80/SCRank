@@ -17,8 +17,10 @@ Including another URLconf
 from tool.admin import admin
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('tool/', include("tool.urls")),
+    path('', RedirectView.as_view(url='tool/')), 
 ]

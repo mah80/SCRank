@@ -1,0 +1,77 @@
+{% extends "tool/base.html" %}
+{% load static %}
+
+
+{% block content %}
+
+<div class="row">
+    <div class="col-12 text-center mt-5 mb-5">
+        
+        <span class="text-bold"> Execution time: </span>  {{time}} 
+        {% comment %} <img src="{% static 'tool/results/automation.png' %}" class="pl-3" style="width: 60px;" alt="runtime">   {% endcomment %}
+    </div>
+    <div class="col-12">
+        <div class="chart-container text-center" style="width: 80%; margin: 0 auto;">
+            <h3> Sensitivity per Element</h3>
+            <canvas id="chart1"></canvas>
+            <button id="download-chart1" class="btn btn-outline-primary mt-5 mb-5">Download Chart</button>
+        </div>
+    </div>
+    <div class="row mt-5 mb-5">
+        <div class="col-md-4 offset-md-4 text-center border rounded border-warning" >Download results (zip format)  <a href="{% url 'download_zip' name=zip.result %}"> <img src="{% static 'tool/results/download.png' %}" style="width: 25px;" alt="logo" > </a> </div>
+    </div>
+
+</div>
+
+<script>
+    
+    var bars = {
+        labels: {{ data.class_names|safe }},
+        datasets: [{
+            label: 'Sensitivity Level',
+            data: {{ data.sensitivity_levels|safe }},
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+        }]
+    };
+
+
+    var ctx4 = document.getElementById('chart1').getContext('2d');
+    var myPieChart4 = new Chart(ctx4, {
+        type: 'bar',
+        data: bars,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Sensitivity Level'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Name of classifiers'
+                    },
+                    ticks: {
+                        //autoSkip: true,
+                        //maxTicksLimit: 20, // Adjust this number as needed
+                        maxRotation: 90,
+                        minRotation: 45
+                    }
+                }
+            }
+        }
+    });
+
+    // Function to download the chart as an image
+    document.getElementById('download-chart1').addEventListener('click', function() {
+        var link = document.createElement('a');
+        link.href = document.getElementById('chart1').toDataURL('image/png');
+        link.download = 'SensitivityPerElement.png';
+        link.click();
+    });
+</script>
+{% endblock content %}
