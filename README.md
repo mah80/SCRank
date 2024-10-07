@@ -1,13 +1,16 @@
 # SCRank
 
-## Setup Instructions
+# The Home Page
+![Home Page] (https://github.com/malmukhtar/SCRank/blob/Main/Home%20Page.png)
+
+# Setup Instructions
 
 Follow these steps to set up and run the Django app locally:
 
-### 1. Clone the Repository and change the directory to the main directory 
+# 1. Clone the Repository and change the directory to the main directory 
 
 
-### 2. Create a Virtual Environment
+# 2. Create a Virtual Environment
 
 It's recommended to use a virtual environment to isolate project dependencies. If you don't have `virtualenv` installed, you can install it using pip:
 
@@ -43,7 +46,7 @@ Install the required Python packages:
 pip install -r requirements.txt
 ```
 
-### 4. Run the Django App
+# 4. Run the Django App
 
 Run the development server:
 
@@ -65,7 +68,7 @@ Quit the server with CONTROL-C.
 ```
 
 
-### 6. Access the App
+# 6. Access the App
 
 Open your web browser and navigate to [http://127.0.0.1:8000/tool](http://127.0.0.1:8000/tool) to view the app.
 
