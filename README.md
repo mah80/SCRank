@@ -1,4 +1,4 @@
-# Class Sensitivity Web App
+# SCRank
 
 ## Setup Instructions
 
