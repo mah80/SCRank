@@ -3,6 +3,18 @@
 # The Home Page
 ![Home Page] (https://github.com/malmukhtar/SCRank/blob/Main/Home%20Page.png)
 
+# Overview
+This tool reads the Java source-code files of the project, generates the abstract syntax tree, and navigates it to identify each sensitive classifier (class, interface, enumeration) based on pre-defined keywords dictionary and rules.
+
+# Mechanism
+•	For dictionary, it is a collection of keywords that may be used as attribute names in classes, representing sensitive data within the code (e.g., username, password, email, patientId). These keywords are defined by the user based on their understanding of the project domain. The dictionary serves as a customizable tool to flag attributes that are potentially sensitive in the code.
+
+•	For class, it is classified as sensitive if it has at least one sensitive attribute (attribute-based), or it has at least one sensitive method (method-based). The attribute is defined as sensitive if it matches one of the sensitive keywords in the dictionary. The method is defined as sensitive if: it accepts at least one parameter which is an object of a sensitive class (attribute-based), or it has at least one local variable which is an object of a sensitive class (attribute-based), or it accesses one of the sensitive attributes in the same class.
+
+•	For interface, it is classified as sensitive if one of its abstract methods has at least one parameter which is an object of a sensitive class (attribute-based).
+
+•	For enumeration, it is classified as sensitive if it has at least one enum constant which matches one of the sensitive keywords in the dictionary.
+
 # Setup Instructions
 
 Follow these steps to set up and run the Django app locally:
@@ -72,7 +84,4 @@ Quit the server with CONTROL-C.
 
 Open your web browser and navigate to [http://127.0.0.1:8000/tool](http://127.0.0.1:8000/tool) to view the app.
 
-```
-# Class-Sensitivity-Attributes-and-Methods-Check
-This project reads the java source code, generates its abstract syntax tree, and navigates it to identify each sensitive class based on the attributes and methods. The class is classified as sensitive if it has at least one sensitive attribute or it has at least one sensitive method. The attribute is classified a sensitive attribute if it exists in the dictionary of sensitive keywords. The method is classified as sensitive if: it has at least one parameter which is an object from a sensitive class, it has at least one local variable which is an object from a sensitive class, it has an assignment of a sensitive attribute in the same class.
 ```
