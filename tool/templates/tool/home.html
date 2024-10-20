@@ -1,0 +1,67 @@
+{% extends "tool/base.html" %}
+{% load static %}
+
+
+{% block content %}
+
+
+<div class="row h-100 justify-content-center message">
+  <div class="w-100 text-center ">
+    <span class="text-danger">
+      {% if messages %}
+      {% for message in messages %}
+      {{message}}
+      {% endfor %}
+      {% endif %}
+      <span>
+  </div>
+</div>
+
+
+{% csrf_token %}
+<div class="row justify-content-center ">
+  <!-- Left Side Div -->
+
+  <div
+    class="col-md-5 left-side  text-white text-center  card rounded-3 bg-secondary bg-gradient d-flex justify-content-center align-items-center">
+
+    <form id="git_form" action="{% url 'git_process' %}" method="POST">
+      {% csrf_token %}
+      <div class="input-group mb-3">
+        <span class="input-group-text" id="basic-addon3">GitHub Repository</span>
+        <input type="text" class="form-control" id="basic-url" name="GitHub_repo"
+          aria-describedby="basic-addon3 basic-addon4" placeholder="Paste repo link here" required>
+        <button class="btn btn-light" type="submit" id="submit_repo">Submit</button>
+      </div>
+    </form>
+  </div>
+  <div class="flex-column col-md-1 text-center d-flex justify-content-center align-items-center">
+    <div class="w-100 h-25 mb-4">
+      <div class="vr h-100"></div>
+    </div>
+    <div> OR </div>
+    <div class="w-100 h-25 mt-4">
+      <div class="vr h-100"></div>
+    </div>
+  </div>
+
+  <!-- Right Side Div -->
+  <div
+    class="col-md-5 right-side text-white text-center  card rounded-3 bg-light bg-gradient d-flex justify-content-center align-items-center">
+    <form id="zip_form" action="{% url 'zip_process' %}" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="input-group mb-3">
+        <input type="file" name="zip_file" class="form-control" id="zip_file" required>
+        <!-- <label class="input-group-text" for="inputGroupFile02">Upload</label> -->
+        <button class="btn btn-outline-secondary" type="submit" id="submit_url">Upload</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+</form>
+<div class="w-90 mt-5 text-center note-text">
+  <p>Please make sure the keywords are updated for the project to be examined. </p>
+  <p>You can update the keywords by clicking on Keyword button from the navigation bar</p>
+</div>
+{% endblock content %}

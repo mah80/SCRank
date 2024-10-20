@@ -1,0 +1,23 @@
+{% extends "tool/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-8 pl-3" style="padding: 30px;"><b>Project name</b></div>
+    <div class="col-4 text-left" style="text-align: end; padding: 30px;"><b>Timestamp</b></div>
+</div>
+
+<ul class="list-group mb-5">
+    
+    {% for job in jobs %}
+    {% if job.result %}
+    <li class="list-group-item">
+        <div class="row">
+            <div class="col-8"><a href="{% url 'download_zip' name=job.result %}">{{job.name}}</a> </div>
+            <div class="col-4 text-left" style="text-align: end;">{{job.updated_at}}</div>
+        </div>
+    </li>
+    {% endif %}
+    {% endfor %}
+</ul>
+{% endblock content %}
