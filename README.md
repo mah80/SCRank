@@ -87,5 +87,6 @@ Open your web browser and navigate to [http://127.0.0.1:8000/tool](http://127.0.
 
 ```
 
-# 7. Download the Results
+# **7. Download the Results**
+
 After running the SCRank on a project, click on the Download results button to get all the output files. File Output Map.pdf in the repository details the output files content.
