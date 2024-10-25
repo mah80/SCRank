@@ -1,9 +1,7 @@
-password,pwd,passwd,accNum,pw,
-account_number,acc_number,account_num,acc_num,accountNumber,
-ssn,social_security_number,soc_sec_num,socialSecurityNumber,sSN,idNumber
-userId,uesrIdNumber,creditCardInfo,creditcardinfo,usId,id
-creditcardnumber,creditCardNumber,cartId,cartIdNumber,creditNumber,
+studentName,studentId,studentEmail,studentPhoneNumber,studentGrade,grade
+email,instructorName,instructorEmail,A_Plus,A+,A_Minus
+A-,B_Plus,B+,B_Minus,B-,C_Plus
+C+,C_Minus,C-,D_Plus,D+,D_Minus
+D-,F,fail,phoneNumber,username,password
 usrnm,userName,usrNm,usrName,username,usrnm
-PHONE_NUMBER_PROPERTY,sex,birthdate,uuid,,
-email,given_name,family_name,givenName,familyName,
-patientId,bedNumber,,,,
+doB,birthdate,password,pwd,passwd,
