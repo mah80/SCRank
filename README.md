@@ -3,6 +3,9 @@
 # The Home Page
 ![alt text](https://github.com/user-attachments/assets/59d4ace1-4745-4708-840d-52f62581d6c6)
 
+# The Tool Output Page
+![alt text](https://github.com/user-attachments/assets/565b6261-c3ea-454c-ba75-464cede4ed5a)
+
 # Overview
 This tool reads the Java source-code files of the project, generates the abstract syntax tree, and navigates it to identify each sensitive classifier (class, interface, enumeration) based on pre-defined keywords dictionary and rules.
 
