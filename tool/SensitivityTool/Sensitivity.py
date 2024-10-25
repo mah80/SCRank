@@ -1660,7 +1660,7 @@ def addFileHeader(file_path, header):
     with open(os.path.join(OUTPUT_DIR,file_path), 'r') as infile:
         data = list(csv.reader(infile))
 
-    with open(os.path.join(OUTPUT_DIR,file_path), 'w', newline='') as outfile:
+    with open(file_path, 'w', newline='') as outfile:
         writer = csv.writer(outfile)
         writer.writerow(header)
         writer.writerows(data)
