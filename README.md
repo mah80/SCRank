@@ -8,13 +8,13 @@ This tool reads the Java source-code files of the project, generates the abstrac
 ![alt text](https://github.com/user-attachments/assets/565b6261-c3ea-454c-ba75-464cede4ed5a)
 
 # Mechanism
-•	For dictionary, it is a collection of keywords that may be used as attribute names in classes, representing sensitive data within the code (e.g., username, password, email, patientId). These keywords are defined by the user based on their understanding of the project domain. The dictionary serves as a customizable tool to flag attributes that are potentially sensitive in the code.
+•	For **dictionary**, it is a collection of keywords that may be used as attribute names in classes, representing sensitive data within the code (e.g., username, password, email, patientId). These keywords are defined by the user based on their understanding of the project domain. The dictionary serves as a customizable tool to flag attributes that are potentially sensitive in the code.
 
-•	For class, it is classified as sensitive if it has at least one sensitive attribute (attribute-based), or it has at least one sensitive method (method-based). The attribute is defined as sensitive if it matches one of the sensitive keywords in the dictionary. The method is defined as sensitive if: it accepts at least one parameter which is an object of a sensitive class (attribute-based), or it has at least one local variable which is an object of a sensitive class (attribute-based), or it accesses one of the sensitive attributes in the same class.
+•	For **class**, it is classified as sensitive if it has at least one sensitive attribute (attribute-based), or it has at least one sensitive method (method-based). The attribute is defined as sensitive if it matches one of the sensitive keywords in the dictionary. The method is defined as sensitive if: it accepts at least one parameter which is an object of a sensitive class (attribute-based), or it has at least one local variable which is an object of a sensitive class (attribute-based), or it accesses one of the sensitive attributes in the same class.
 
-•	For interface, it is classified as sensitive if one of its abstract methods has at least one parameter which is an object of a sensitive class (attribute-based).
+•	For **interface**, it is classified as sensitive if one of its abstract methods has at least one parameter which is an object of a sensitive class (attribute-based).
 
-•	For enumeration, it is classified as sensitive if it has at least one enum constant which matches one of the sensitive keywords in the dictionary.
+•	For **enumeration**, it is classified as sensitive if it has at least one enum constant which matches one of the sensitive keywords in the dictionary.
 
 # Setup Instructions
 
@@ -51,7 +51,7 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-### 3. Install Requirements
+# 3. Install Requirements
 
 Install the required Python packages:
 
@@ -79,6 +79,9 @@ Django version 4.2.3, using settings 'sensitivity_tool.settings'
 Starting development server at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
 ```
+
+# 5. Download the Results
+After running the SCRank on a project, click on the Download results button to get all the output files. File Output Map.pdf in the repository details the output files content.
 
 
 # 6. Access the App
