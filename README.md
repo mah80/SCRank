@@ -37,7 +37,7 @@ Create a virtual environment:
 virtualenv venv
 ```
 
-Activate the virtual environment:
+# 3. Activate the virtual environment:
 
 **For Windows:**
 
@@ -51,7 +51,7 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-# 3. Install Requirements
+# 4. Install Requirements
 
 Install the required Python packages:
 
@@ -59,7 +59,7 @@ Install the required Python packages:
 pip install -r requirements.txt
 ```
 
-# 4. Run the Django App
+# 5. Run the Django App
 
 Run the development server:
 
@@ -80,12 +80,12 @@ Starting development server at http://127.0.0.1:8000/
 Quit the server with CONTROL-C.
 ```
 
-# 5. Download the Results
-After running the SCRank on a project, click on the Download results button to get all the output files. File Output Map.pdf in the repository details the output files content.
-
 
 # 6. Access the App
 
 Open your web browser and navigate to [http://127.0.0.1:8000/tool](http://127.0.0.1:8000/tool) to view the app.
 
 ```
+
+# 7. Download the Results
+After running the SCRank on a project, click on the Download results button to get all the output files. File Output Map.pdf in the repository details the output files content.
