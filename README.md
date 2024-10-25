@@ -1,13 +1,11 @@
 # SCRank
+This tool reads the Java source-code files of the project, generates the abstract syntax tree, and navigates it to identify each sensitive classifier (class, interface, enumeration) based on pre-defined keywords dictionary and rules.
 
-# The Home Page
+# SCRank Home Page
 ![alt text](https://github.com/user-attachments/assets/59d4ace1-4745-4708-840d-52f62581d6c6)
 
-# The Tool Output Page
+# SCRank Output Page
 ![alt text](https://github.com/user-attachments/assets/565b6261-c3ea-454c-ba75-464cede4ed5a)
-
-# Overview
-This tool reads the Java source-code files of the project, generates the abstract syntax tree, and navigates it to identify each sensitive classifier (class, interface, enumeration) based on pre-defined keywords dictionary and rules.
 
 # Mechanism
 •	For dictionary, it is a collection of keywords that may be used as attribute names in classes, representing sensitive data within the code (e.g., username, password, email, patientId). These keywords are defined by the user based on their understanding of the project domain. The dictionary serves as a customizable tool to flag attributes that are potentially sensitive in the code.
