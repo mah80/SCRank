@@ -1,7 +1,7 @@
 # SCRank
 
 # The Home Page
-https://github.com/mah80/SCRank/issues/19#issuecomment-2437701491
+https://github.com/user-attachments/assets/59d4ace1-4745-4708-840d-52f62581d6c6
 
 # Overview
 This tool reads the Java source-code files of the project, generates the abstract syntax tree, and navigates it to identify each sensitive classifier (class, interface, enumeration) based on pre-defined keywords dictionary and rules.
