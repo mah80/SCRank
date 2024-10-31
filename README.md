@@ -5,7 +5,7 @@ This tool reads the Java source-code files of the project, generates the abstrac
 ![alt text](https://github.com/user-attachments/assets/59d4ace1-4745-4708-840d-52f62581d6c6)
 
 # SERank Output Page
-The following page is the SERank output page after running it on an example. The example is available on https://github.com/mah80/Motivating-Example.git, and the keywords dictionary file (that was used) is included within the example files.
+The following page is the SERank output page after running it on an example. The example is available on https://anonymous.4open.science/r/Motivating-Example-9483/README.md, and the keywords dictionary file (that was used) is included within the example files.
 
 ![alt text](https://github.com/user-attachments/assets/565b6261-c3ea-454c-ba75-464cede4ed5a)
 
