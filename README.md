@@ -1,11 +1,11 @@
-# SCRank
+# SERank
 This tool reads the Java source-code files of the project, generates the abstract syntax tree, and navigates it to identify each sensitive classifier (class, interface, enumeration) based on pre-defined keywords dictionary and rules.
 
-# SCRank Home Page
+# SERank Home Page
 ![alt text](https://github.com/user-attachments/assets/59d4ace1-4745-4708-840d-52f62581d6c6)
 
-# SCRank Output Page
-The following page is the SCRank output page after running it on an example. The example is available on https://github.com/mah80/Motivating-Example.git, and the keywords dictionary file (that was used) is included within the example files.
+# SERank Output Page
+The following page is the SERank output page after running it on an example. The example is available on https://github.com/mah80/Motivating-Example.git, and the keywords dictionary file (that was used) is included within the example files.
 
 ![alt text](https://github.com/user-attachments/assets/565b6261-c3ea-454c-ba75-464cede4ed5a)
 
@@ -85,10 +85,10 @@ Quit the server with CONTROL-C.
 
 # 6. Access the App
 
-Open your web browser and navigate to [http://127.0.0.1:8000/tool](http://127.0.0.1:8000/tool) to view the SCRank home page.
+Open your web browser and navigate to [http://127.0.0.1:8000/tool](http://127.0.0.1:8000/tool) to view the SERank home page.
 
 
 
 # 7. Download the Results
 
-After running the SCRank on a project, click on the Download results button to get all the output files. File Output Map.pdf in the repository details the output files content.
+After running the SERank on a project, click on the Download results button to get all the output files. File Output Map.pdf in the repository details the output files content.
