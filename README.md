@@ -1,5 +1,5 @@
 # SERank
-SERank is a ranking tool that reads the Java source-code files of the project, generates the abstract syntax tree, and navigates it to identify each sensitive classifier (class, interface, enumeration) based on pre-defined keywords dictionary and rules. The tool quantifies the sensitivity score of classifiers (based on thier sensitive properties) then ranks them accordingly to assists developers in prioritizing security efforts.
+SERank is a software element ranking tool that reads the Java source-code files of the project, generates the abstract syntax tree, and navigates it to identify each sensitive classifier (class, interface, enumeration) based on pre-defined keywords dictionary and rules. The tool quantifies the sensitivity score of classifiers (based on thier sensitive properties) then ranks them accordingly to assists developers in prioritizing security efforts.
 
 # SERank Home Page
 ![alt text](https://github.com/user-attachments/assets/59d4ace1-4745-4708-840d-52f62581d6c6)
